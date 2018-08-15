@@ -7,21 +7,27 @@ export const { AbstractActionHandler } = handlers
  * the database is already migrated, including an `_index_state` table. Refer to the tests for more information.
  */
 export class MassiveActionHandler extends AbstractActionHandler {
+  protected schemaInstance: any
+
   constructor(
     protected updaters: Updater[],
     protected effects: Effect[],
     protected massiveInstance: any,
+    protected dbSchema: string = "public",
   ) {
     super(updaters, effects)
+    this.schemaInstance = this.massiveInstance[dbSchema]
   }
 
   protected async handleWithState(handle: (state: any, context?: any) => void): Promise<void> {
     await new Promise((resolve, reject) => {
       this.massiveInstance.withTransaction(async (tx: any) => {
+        const db = tx[this.dbSchema]
         try {
-          await handle(tx)
-          resolve(tx)
+          await handle(db)
+          resolve(db)
         } catch (err) {
+          console.error(err)
           reject()
         }
       }, {
@@ -43,7 +49,7 @@ export class MassiveActionHandler extends AbstractActionHandler {
   }
 
   protected async loadIndexState(): Promise<IndexState> {
-    const indexState = await this.massiveInstance._index_state.findOne({ id: 0 })
+    const indexState = await this.schemaInstance._index_state.findOne({ id: 0 })
     if (indexState) {
       return indexState
     } else {
