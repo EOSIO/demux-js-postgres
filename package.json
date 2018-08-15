@@ -1,10 +1,10 @@
 {
-  "name": "demux-eos",
+  "name": "demux-postgres",
   "version": "0.0.1",
-  "description": "Demux-js Action Reader implementations for EOSIO blockchains",
+  "description": "Demux-js Action Handler implementation for Postgres databases",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "repository": "https://github.com/EOSIO/demux-js-eos",
+  "repository": "https://github.com/EOSIO/demux-js-postgres",
   "author": {
     "name": "Julien Heller",
     "url": "https://block.one/"
