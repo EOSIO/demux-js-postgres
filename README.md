@@ -1,2 +1,2 @@
-# demux-js-eos 
+# demux-js-postgres 
 
