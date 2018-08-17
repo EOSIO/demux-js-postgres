@@ -16,7 +16,11 @@ export class MassiveActionHandler extends AbstractActionHandler {
     protected dbSchema: string = "public",
   ) {
     super(updaters, effects)
-    this.schemaInstance = this.massiveInstance[dbSchema]
+    if (dbSchema === "public") {
+      this.schemaInstance = this.massiveInstance
+    } else {
+      this.schemaInstance = this.massiveInstance[dbSchema]
+    }
   }
 
   protected async handleWithState(handle: (state: any, context?: any) => void): Promise<void> {
