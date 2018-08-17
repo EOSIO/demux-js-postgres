@@ -1,6 +1,4 @@
-import { Block, Effect, handlers, IndexState, Updater } from "demux-js"
-
-export const { AbstractActionHandler } = handlers
+import { AbstractActionHandler, Block, Effect, IndexState, Updater } from "demux-js"
 
 /**
  * Connects to a Postgres database using [MassiveJS](https://github.com/dmfay/massive-js). This expects that
@@ -39,7 +37,7 @@ export class MassiveActionHandler extends AbstractActionHandler {
   }
 
   protected async updateIndexState(state: any, block: Block, isReplay: boolean) {
-    const { actions, ...blockInfo } = block
+    const { blockInfo } = block
     state._index_state.save({
       id: 0,
       block_number: blockInfo.blockNumber,

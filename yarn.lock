@@ -1629,14 +1629,9 @@ delegates@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/delegates/-/delegates-1.0.0.tgz#84c6e159b81904fdca59a0ef44cd870d31250f9a"
 
-demux-js@0.0.1-docs:
-  version "0.0.1-docs"
-  resolved "https://registry.yarnpkg.com/demux-js/-/demux-js-0.0.1-docs.tgz#5ce14f04c146326f8ab222ff2c30e9796c560948"
-  dependencies:
-    massive "^5.1.3"
-    pg-promise "^8.4.5"
-    request "^2.87.0"
-    request-promise-native "^1.0.5"
+demux-js@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/demux-js/-/demux-js-1.0.2.tgz#60852a597ecf11eb41b6b4483f496b626ed4f966"
 
 detect-indent@5.0.0:
   version "5.0.0"
@@ -3588,7 +3583,7 @@ marked@^0.3.17:
   version "0.3.19"
   resolved "https://registry.yarnpkg.com/marked/-/marked-0.3.19.tgz#5d47f709c4c9fc3c216b6d46127280f40b39d790"
 
-massive@^5.1.3, massive@^5.2.0:
+massive@^5.2.0:
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/massive/-/massive-5.2.0.tgz#7b734c54c2230db37f161737d1339f3d9e4f879f"
   dependencies:

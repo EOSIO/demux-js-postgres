@@ -30,14 +30,14 @@
     "typescript": "^2.9.2"
   },
   "dependencies": {
-    "demux-js": "0.0.1-docs",
+    "demux-js": "^1.0.2",
     "massive": "^5.2.0",
     "pg-promise": "^8.4.5",
     "request": "^2.87.0",
     "request-promise-native": "^1.0.5"
   },
   "peerDependencies": {
-    "demux-js": "0.0.1-docs"
+    "demux-js": "^1.0.2"
   },
   "scripts": {
     "release": "release-it",

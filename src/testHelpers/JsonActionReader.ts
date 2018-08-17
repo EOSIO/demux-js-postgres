@@ -1,7 +1,5 @@
-import { Block, readers } from "demux-js"
+import { AbstractActionReader, Block } from "demux-js"
 import request from "request-promise-native"
-
-export const { AbstractActionReader } = readers
 
 /**
  * Reads from an array of `Block` objects, useful for testing.
@@ -19,10 +17,11 @@ export class JsonActionReader extends AbstractActionReader {
 
   public async getHeadBlockNumber(): Promise<number> {
     const block = this.blockchain.slice(-1)[0]
-    if (this.blockchain.length !== block.blockNumber) {
-      throw Error(`Block at position ${this.blockchain.length} indicates position ${block.blockNumber} incorrectly.`)
+    const { blockInfo: { blockNumber } } = block
+    if (this.blockchain.length !== blockNumber) {
+      throw Error(`Block at position ${this.blockchain.length} indicates position ${blockNumber} incorrectly.`)
     }
-    return block.blockNumber
+    return blockNumber
   }
 
   public async getBlock(blockNumber: number): Promise<Block> {
@@ -30,8 +29,8 @@ export class JsonActionReader extends AbstractActionReader {
     if (!block) {
       throw Error(`Block at position ${blockNumber} does not exist.`)
     }
-    if (block.blockNumber !== blockNumber) {
-      throw Error(`Block at position ${blockNumber} indicates position ${block.blockNumber} incorrectly.`)
+    if (block.blockInfo.blockNumber !== blockNumber) {
+      throw Error(`Block at position ${blockNumber} indicates position ${block.blockInfo.blockNumber} incorrectly.`)
     }
     return block
   }
