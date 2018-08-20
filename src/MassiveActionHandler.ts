@@ -1,4 +1,4 @@
-import { AbstractActionHandler, Block, Effect, IndexState, Updater } from "demux-js"
+import { AbstractActionHandler, Block, Effect, IndexState, Updater } from "demux"
 
 /**
  * Connects to a Postgres database using [MassiveJS](https://github.com/dmfay/massive-js). This expects that
