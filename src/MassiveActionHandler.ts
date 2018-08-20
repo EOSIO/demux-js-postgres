@@ -1,6 +1,4 @@
-import { Block, Effect, handlers, IndexState, Updater } from "demux-js"
-
-export const { AbstractActionHandler } = handlers
+import { AbstractActionHandler, Block, Effect, IndexState, Updater } from "demux"
 
 /**
  * Connects to a Postgres database using [MassiveJS](https://github.com/dmfay/massive-js). This expects that
@@ -16,13 +14,22 @@ export class MassiveActionHandler extends AbstractActionHandler {
     protected dbSchema: string = "public",
   ) {
     super(updaters, effects)
-    this.schemaInstance = this.massiveInstance[dbSchema]
+    if (this.dbSchema === "public") {
+      this.schemaInstance = this.massiveInstance
+    } else {
+      this.schemaInstance = this.massiveInstance[this.dbSchema]
+    }
   }
 
   protected async handleWithState(handle: (state: any, context?: any) => void): Promise<void> {
     await new Promise((resolve, reject) => {
       this.massiveInstance.withTransaction(async (tx: any) => {
-        const db = tx[this.dbSchema]
+        let db
+        if (this.dbSchema === "public") {
+          db = tx
+        } else {
+          db = tx[this.dbSchema]
+        }
         try {
           await handle(db)
           resolve(db)
@@ -39,7 +46,7 @@ export class MassiveActionHandler extends AbstractActionHandler {
   }
 
   protected async updateIndexState(state: any, block: Block, isReplay: boolean) {
-    const { actions, ...blockInfo } = block
+    const { blockInfo } = block
     state._index_state.save({
       id: 0,
       block_number: blockInfo.blockNumber,

@@ -1,6 +1,6 @@
 {
   "name": "demux-postgres",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Demux-js Action Handler implementation for Postgres databases",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -30,14 +30,14 @@
     "typescript": "^2.9.2"
   },
   "dependencies": {
-    "demux-js": "0.0.1-docs",
+    "demux": "^1.0.3",
     "massive": "^5.2.0",
     "pg-promise": "^8.4.5",
     "request": "^2.87.0",
     "request-promise-native": "^1.0.5"
   },
   "peerDependencies": {
-    "demux-js": "0.0.1-docs"
+    "demux": "^1.0.3"
   },
   "scripts": {
     "release": "release-it",
