@@ -128,10 +128,12 @@ describe("TestMassiveActionHandler", () => {
     await actionHandler.handleBlock(block1, isRollback1, actionReader.isFirstBlock)
     expect(actionReader.isFirstBlock).toBe(true)
     await wait(500)
+
     const [block2, isRollback2] = await actionReader.nextBlock()
     await actionHandler.handleBlock(block2, isRollback2, actionReader.isFirstBlock)
     expect(actionReader.isFirstBlock).toBe(false)
     await wait(500)
+
     actionHandler.reset()
     const [needToSeek, seekTo] = await actionHandler.handleBlock(block1, isRollback1, true)
     expect(needToSeek).toBe(true)
