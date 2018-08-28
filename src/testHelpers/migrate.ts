@@ -1,13 +1,11 @@
 import * as path from "path"
 import { IDatabase, QueryFile } from "pg-promise"
 
-function loadQueryFile(file: string) {
+function loadQueryFile(file: string, schema: string) {
   const fullPath = path.join(__dirname, file)
   const options = {
     minify: true,
-    params: {
-      schema: "public", // replace ${schema~} with "public"
-    },
+    params: { schema },
   }
   const qf = new QueryFile(fullPath, options)
   if (qf.error) {
@@ -16,12 +14,12 @@ function loadQueryFile(file: string) {
   return qf
 }
 
-export async function up(pgp: IDatabase<{}>) {
-  const create = loadQueryFile("create.sql")
+export async function up(pgp: IDatabase<{}>, schema: string) {
+  const create = loadQueryFile("create.sql", schema)
   await pgp.none(create)
 }
 
-export async function reset(pgp: IDatabase<{}>) {
-  const truncate = loadQueryFile("truncate.sql")
-  await pgp.none(truncate)
+export async function dropSchema(pgp: IDatabase<{}>, schema: string) {
+  const drop = loadQueryFile("drop.sql", schema)
+  await pgp.none(drop)
 }
