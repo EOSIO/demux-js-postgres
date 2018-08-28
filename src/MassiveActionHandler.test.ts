@@ -1,6 +1,6 @@
 import Docker from "dockerode"
 import massive from "massive"
-import { MassiveActionHandler } from "./MassiveActionHandler"
+import { TestMassiveActionHandler } from "./testHelpers/TestMassiveActionHandler"
 import blockchain from "./testHelpers/blockchain.json"
 import * as dockerUtils from "./testHelpers/docker"
 import { JsonActionReader } from "./testHelpers/JsonActionReader"
@@ -13,7 +13,6 @@ const postgresContainerName = "massive-action-handler-test"
 const dbName = "demuxmassivetest"
 const dbUser = "docker"
 const dbPass = "docker"
-let db: any
 
 export function wait(ms: number) {
   return new Promise((resolve) => {
@@ -23,31 +22,44 @@ export function wait(ms: number) {
 
 jest.setTimeout(30000)
 
-beforeAll(async () => {
-  await dockerUtils.pullImage(docker, postgresImageName)
-  await dockerUtils.removePostgresContainer(docker, postgresContainerName)
-  await dockerUtils.startPostgresContainer(docker, postgresImageName, postgresContainerName, dbName, dbUser, dbPass)
-  db = await massive({
-    database: dbName,
-    user: dbUser,
-    password: dbPass,
+describe("TestMassiveActionHandler", () => {
+  let actionReader: JsonActionReader
+  let actionHandler: TestMassiveActionHandler
+  let massiveInstance: any
+  let db: any
+  let schema = ""
+
+  beforeAll(async (done) => {
+    await dockerUtils.pullImage(docker, postgresImageName)
+    await dockerUtils.removePostgresContainer(docker, postgresContainerName)
+    await dockerUtils.startPostgresContainer(docker, postgresImageName, postgresContainerName, dbName, dbUser, dbPass)
+    massiveInstance = await massive({
+      database: dbName,
+      user: dbUser,
+      password: dbPass,
+    })
+    done()
   })
-  await migrate.up(db.instance)
-  await db.reload()
-})
 
-afterAll(async () => {
-  await dockerUtils.removePostgresContainer(docker, postgresContainerName)
-})
+  afterAll(async (done) => {
+    await dockerUtils.removePostgresContainer(docker, postgresContainerName)
+    done()
+  })
 
-describe("MassiveActionHandler", async () => {
   beforeEach(async () => {
-    await migrate.reset(db.instance)
+    schema = Math.random().toString(36).substring(7)
+    await migrate.up(massiveInstance.instance, schema)
+    await massiveInstance.reload()
+    db = massiveInstance[schema]
+    actionReader = new JsonActionReader(blockchain)
+    actionHandler = new TestMassiveActionHandler(updaters, [], massiveInstance, schema)
+  })
+
+  afterEach(async () => {
+    await migrate.dropSchema(massiveInstance.instance, schema)
   })
 
   it("populates database correctly", async () => {
-    const actionReader = new JsonActionReader(blockchain)
-    const actionHandler = new MassiveActionHandler(updaters, [], db)
     const [block1, isRollback] = await actionReader.nextBlock()
     await actionHandler.handleBlock(block1, isRollback, actionReader.isFirstBlock)
     await wait(500)
@@ -109,5 +121,20 @@ describe("MassiveActionHandler", async () => {
       completed: true,
       todo_id: 2,
     })
+  })
+
+  it("returns a needToSeek block number if state already exists", async () => {
+    const [block1, isRollback1] = await actionReader.nextBlock()
+    await actionHandler.handleBlock(block1, isRollback1, actionReader.isFirstBlock)
+    expect(actionReader.isFirstBlock).toBe(true)
+    await wait(500)
+    const [block2, isRollback2] = await actionReader.nextBlock()
+    await actionHandler.handleBlock(block2, isRollback2, actionReader.isFirstBlock)
+    expect(actionReader.isFirstBlock).toBe(false)
+    await wait(500)
+    actionHandler.reset()
+    const [needToSeek, seekTo] = await actionHandler.handleBlock(block1, isRollback1, true)
+    expect(needToSeek).toBe(true)
+    expect(seekTo).toBe(3)
   })
 })

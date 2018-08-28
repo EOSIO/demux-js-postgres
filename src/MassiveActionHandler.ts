@@ -47,18 +47,23 @@ export class MassiveActionHandler extends AbstractActionHandler {
 
   protected async updateIndexState(state: any, block: Block, isReplay: boolean) {
     const { blockInfo } = block
-    state._index_state.save({
-      id: 0,
+    const fromDb = (await state._index_state.findOne({ id: 1 })) || {}
+    const toSave = {
+      ...fromDb,
       block_number: blockInfo.blockNumber,
       block_hash: blockInfo.blockHash,
       is_replay: isReplay,
-    })
+    }
+    await state._index_state.save(toSave)
   }
 
   protected async loadIndexState(): Promise<IndexState> {
-    const indexState = await this.schemaInstance._index_state.findOne({ id: 0 })
+    const indexState = await this.schemaInstance._index_state.findOne({ id: 1 })
     if (indexState) {
-      return indexState
+      return {
+        blockNumber: indexState.block_number,
+        blockHash: indexState.block_hash,
+      }
     } else {
       return { blockNumber: 0, blockHash: "" }
     }
