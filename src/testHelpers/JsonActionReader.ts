@@ -1,4 +1,4 @@
-import { AbstractActionReader, Block, readers } from "demux"
+import { AbstractActionReader, Block } from "demux"
 import request from "request-promise-native"
 
 /**
