@@ -14,11 +14,6 @@ const dbName = "demuxmassivetest"
 const dbUser = "docker"
 const dbPass = "docker"
 
-export function wait(ms: number) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms)
-  })
-}
 
 jest.setTimeout(30000)
 
@@ -62,7 +57,6 @@ describe("TestMassiveActionHandler", () => {
   it("populates database correctly", async () => {
     const [block1, isRollback] = await actionReader.nextBlock()
     await actionHandler.handleBlock(block1, isRollback, actionReader.isFirstBlock)
-    await wait(500)
 
     const groceries = await db.todo.findOne({ id: 1 })
     expect(groceries).toEqual({
@@ -77,7 +71,6 @@ describe("TestMassiveActionHandler", () => {
 
     const [block2, isNotRollback] = await actionReader.nextBlock()
     await actionHandler.handleBlock(block2, isNotRollback, actionReader.isFirstBlock)
-    await wait(500)
 
     const cookies = await db.task.findOne({ name: "cookies" })
     expect(cookies).toEqual({
@@ -97,7 +90,6 @@ describe("TestMassiveActionHandler", () => {
 
     const [block3, alsoNotRollback] = await actionReader.nextBlock()
     await actionHandler.handleBlock(block3, alsoNotRollback, actionReader.isFirstBlock)
-    await wait(500)
 
     const milk = await db.task.findOne({ name: "milk" })
     const dippedCookies = await db.task.findOne({ name: "cookies" })
@@ -127,12 +119,10 @@ describe("TestMassiveActionHandler", () => {
     const [block1, isRollback1] = await actionReader.nextBlock()
     await actionHandler.handleBlock(block1, isRollback1, actionReader.isFirstBlock)
     expect(actionReader.isFirstBlock).toBe(true)
-    await wait(500)
 
     const [block2, isRollback2] = await actionReader.nextBlock()
     await actionHandler.handleBlock(block2, isRollback2, actionReader.isFirstBlock)
     expect(actionReader.isFirstBlock).toBe(false)
-    await wait(500)
 
     actionHandler.reset()
     const [needToSeek, seekTo] = await actionHandler.handleBlock(block1, isRollback1, true)
