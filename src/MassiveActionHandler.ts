@@ -22,26 +22,22 @@ export class MassiveActionHandler extends AbstractActionHandler {
   }
 
   protected async handleWithState(handle: (state: any, context?: any) => void): Promise<void> {
-    await new Promise((resolve, reject) => {
-      this.massiveInstance.withTransaction(async (tx: any) => {
-        let db
-        if (this.dbSchema === "public") {
-          db = tx
-        } else {
-          db = tx[this.dbSchema]
-        }
-        try {
-          await handle(db)
-          resolve(db)
-        } catch (err) {
-          console.error(err)
-          reject()
-        }
-      }, {
-        mode: new this.massiveInstance.pgp.txMode.TransactionMode({
-          tiLevel: this.massiveInstance.pgp.txMode.isolationLevel.serializable,
-        }),
-      })
+    await this.massiveInstance.withTransaction(async (tx: any) => {
+      let db
+      if (this.dbSchema === "public") {
+        db = tx
+      } else {
+        db = tx[this.dbSchema]
+      }
+      try {
+        await handle(db)
+      } catch (err) {
+        throw err // Throw error to trigger ROLLBACK
+      }
+    }, {
+      mode: new this.massiveInstance.pgp.txMode.TransactionMode({
+        tiLevel: this.massiveInstance.pgp.txMode.isolationLevel.serializable,
+      }),
     })
   }
 
