@@ -1,5 +1,9 @@
 import { Container } from "dockerode"
+import cmd from "node-cmd"
 import { Stream } from "stream"
+import { promisify } from "util"
+
+const runCommand = promisify(cmd.get)
 
 export function promisifyStream(stream: Stream): Promise<string> {
   const data: Buffer[] = []
@@ -45,6 +49,20 @@ export function wait(ms: number) {
   return new Promise((resolve) => {
     setTimeout(resolve, ms)
   })
+}
+
+export async function installCyanAudit(
+  dbName: string,
+  dbHost: string,
+  dbPort: number,
+  dbUser: string,
+) {
+  const command = ".\${pwd}/src/testHelpers/cyanaudit/install.pl " +
+    `-d ${dbName} ` +
+    `-h ${dbHost} ` +
+    `-p ${dbPort} ` +
+    `-U ${dbUser}`
+  await runCommand(command)
 }
 
 export async function startPostgresContainer(

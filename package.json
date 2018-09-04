@@ -12,8 +12,8 @@
   "license": "MIT",
   "devDependencies": {
     "@types/dockerode": "^2.5.5",
-    "@types/massive": "^4.6.1",
     "@types/jest": "^23.1.4",
+    "@types/massive": "^4.6.1",
     "@types/node": "^10.5.1",
     "@types/request-promise-native": "^1.0.15",
     "dockerode": "^2.5.5",
@@ -29,8 +29,9 @@
     "typescript": "^2.9.2"
   },
   "dependencies": {
-    "demux": "^1.0.3",
+    "demux": "^1.0.6",
     "massive": "^5.2.0",
+    "node-cmd": "^3.0.0",
     "pg-promise": "8.4.5",
     "request": "^2.87.0",
     "request-promise-native": "^1.0.5"
@@ -43,7 +44,7 @@
     "compile": "tsc",
     "watch": "tsc -w",
     "lint": "tslint -c tslint.json src/**/*.ts",
-    "test": "jest",
+    "test": "PGPASSWORD=docker jest",
     "build-docs": "./build-docs.sh"
   },
   "jest": {

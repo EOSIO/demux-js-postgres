@@ -6,7 +6,7 @@ import request from "request-promise-native"
  */
 export class JsonActionReader extends AbstractActionReader {
   constructor(
-    protected blockchain: Block[],
+    public blockchain: Block[],
     public startAtBlock: number = 1,
     protected onlyIrreversible: boolean = false,
     protected maxHistoryLength: number = 600,
