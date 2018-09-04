@@ -1,5 +1,4 @@
 import { AbstractActionReader, Block } from "demux"
-import request from "request-promise-native"
 
 /**
  * Reads from an array of `Block` objects, useful for testing.
@@ -9,8 +8,7 @@ export class JsonActionReader extends AbstractActionReader {
     public blockchain: Block[],
     public startAtBlock: number = 1,
     protected onlyIrreversible: boolean = false,
-    protected maxHistoryLength: number = 600,
-    protected requestInstance: any = request,
+    protected maxHistoryLength: number = 600
   ) {
     super(startAtBlock, onlyIrreversible, maxHistoryLength)
   }

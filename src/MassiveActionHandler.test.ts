@@ -32,7 +32,8 @@ describe("TestMassiveActionHandler", () => {
       user: dbUser,
       password: dbPass,
     })
-    await dockerUtils.installCyanAudit(dbName, "localhost", 5432, dbUser)
+    await migrate.cyanaudit(massiveInstance.instance)
+    await massiveInstance.reload()
     done()
   })
 

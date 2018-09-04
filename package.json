@@ -31,13 +31,10 @@
   "dependencies": {
     "demux": "^1.0.6",
     "massive": "^5.2.0",
-    "node-cmd": "^3.0.0",
-    "pg-promise": "8.4.5",
-    "request": "^2.87.0",
-    "request-promise-native": "^1.0.5"
+    "pg-promise": "8.4.5"
   },
   "peerDependencies": {
-    "demux": "^1.0.3"
+    "demux": "^1.0.6"
   },
   "scripts": {
     "release": "release-it",

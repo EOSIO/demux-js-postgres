@@ -19,6 +19,11 @@ export async function up(pgp: IDatabase<{}>, schema: string) {
   await pgp.none(create)
 }
 
+export async function cyanaudit(pgp: IDatabase<{}>) {
+  const cyanSql = await loadQueryFile("cyanaudit--2.2.0.sql", "")
+  await pgp.none(cyanSql)
+}
+
 export async function dropSchema(pgp: IDatabase<{}>, schema: string) {
   const drop = loadQueryFile("drop.sql", schema)
   await pgp.none(drop)
