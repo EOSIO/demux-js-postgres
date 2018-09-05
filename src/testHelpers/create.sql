@@ -18,3 +18,8 @@ CREATE TABLE ${schema~}._index_state (
   block_hash text NOT NULL,
   is_replay boolean NOT NULL
 );
+
+CREATE TABLE ${schema~}._block_number_txid (
+  block_number integer PRIMARY KEY,
+  txid bigint NOT NULL
+)

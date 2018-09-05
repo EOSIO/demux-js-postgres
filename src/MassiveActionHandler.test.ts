@@ -1,7 +1,7 @@
 import Docker from "dockerode"
 import massive from "massive"
 import { TestMassiveActionHandler } from "./testHelpers/TestMassiveActionHandler"
-import blockchain from "./testHelpers/blockchain.json"
+import blockchains from "./testHelpers/blockchains"
 import * as dockerUtils from "./testHelpers/docker"
 import { JsonActionReader } from "./testHelpers/JsonActionReader"
 import * as migrate from "./testHelpers/migrate"
@@ -13,7 +13,6 @@ const postgresContainerName = "massive-action-handler-test"
 const dbName = "demuxmassivetest"
 const dbUser = "docker"
 const dbPass = "docker"
-
 
 jest.setTimeout(30000)
 
@@ -33,6 +32,8 @@ describe("TestMassiveActionHandler", () => {
       user: dbUser,
       password: dbPass,
     })
+    await migrate.cyanaudit(massiveInstance.instance)
+    await massiveInstance.reload()
     done()
   })
 
@@ -45,8 +46,9 @@ describe("TestMassiveActionHandler", () => {
     schema = Math.random().toString(36).substring(7)
     await migrate.up(massiveInstance.instance, schema)
     await massiveInstance.reload()
+    await massiveInstance.cyanaudit.fn_update_audit_fields(schema)
     db = massiveInstance[schema]
-    actionReader = new JsonActionReader(blockchain)
+    actionReader = new JsonActionReader(blockchains.blockchain)
     actionHandler = new TestMassiveActionHandler(updaters, [], massiveInstance, schema)
   })
 
@@ -128,5 +130,33 @@ describe("TestMassiveActionHandler", () => {
     const [needToSeek, seekTo] = await actionHandler.handleBlock(block1, isRollback1, true)
     expect(needToSeek).toBe(true)
     expect(seekTo).toBe(3)
+  })
+
+  it("rolls back when blockchain forks", async () => {
+    const [block1, isRollback1] = await actionReader.nextBlock()
+    await actionHandler.handleBlock(block1, isRollback1, actionReader.isFirstBlock)
+    const [block2, isRollback2] = await actionReader.nextBlock()
+    await actionHandler.handleBlock(block2, isRollback2, actionReader.isFirstBlock)
+    const [block3, isRollback3] = await actionReader.nextBlock()
+    await actionHandler.handleBlock(block3, isRollback3, actionReader.isFirstBlock)
+
+    actionReader.blockchain = blockchains.forked
+    const [forkBlock2, forkIsRollback2] = await actionReader.nextBlock()
+    expect(forkBlock2.blockInfo.blockNumber).toBe(2)
+    expect(forkIsRollback2).toBe(true)
+
+    await actionHandler.handleBlock(forkBlock2, forkIsRollback2, actionReader.isFirstBlock)
+    const forkedTask = db.task.findOne({ name: "Forked blockchain" })
+    expect(forkedTask).toBeTruthy()
+
+    const [forkBlock3, forkIsRollback3] = await actionReader.nextBlock()
+    await actionHandler.handleBlock(forkBlock3, forkIsRollback3, actionReader.isFirstBlock)
+    const hongKong = await db.task.findOne({ name: "Hong Kong" })
+    expect(hongKong.completed).toBe(false)
+
+    const [forkBlock4, forkIsRollback4] = await actionReader.nextBlock()
+    await actionHandler.handleBlock(forkBlock4, forkIsRollback4, actionReader.isFirstBlock)
+    const forkedTaskComplete = await db.task.findOne({ name: "Forked blockchain" })
+    expect(forkedTaskComplete.completed).toBe(true)
   })
 })
