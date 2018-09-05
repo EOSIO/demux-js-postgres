@@ -8,7 +8,7 @@ export class JsonActionReader extends AbstractActionReader {
     public blockchain: Block[],
     public startAtBlock: number = 1,
     protected onlyIrreversible: boolean = false,
-    protected maxHistoryLength: number = 600
+    protected maxHistoryLength: number = 600,
   ) {
     super(startAtBlock, onlyIrreversible, maxHistoryLength)
   }
