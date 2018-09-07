@@ -10,10 +10,10 @@ describe("Migration", () => {
     const migration = new TestMigration(
       "test",
       "public",
-      "testHelpers/create.sql",
-      "testHelpers/drop.sql",
+      "testHelpers/migration1.sql",
+      "testHelpers/migration2.sql",
     )
     expect(migration).toBeTruthy()
-    expect(migration._downQueryFile).toBeInstanceOf(QueryFile)
+    expect(migration._downQueryFile).not.toBe(null)
   })
 })

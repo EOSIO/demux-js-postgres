@@ -1,10 +1,11 @@
 import Docker from "dockerode"
 import massive from "massive"
-import { TestMassiveActionHandler } from "./testHelpers/TestMassiveActionHandler"
+import { Migration } from "./Migration"
+import { MigrationRunner } from "./MigrationRunner"
 import blockchains from "./testHelpers/blockchains"
 import * as dockerUtils from "./testHelpers/docker"
 import { JsonActionReader } from "./testHelpers/JsonActionReader"
-import * as migrate from "./testHelpers/migrate"
+import { TestMassiveActionHandler } from "./testHelpers/TestMassiveActionHandler"
 import updaters from "./testHelpers/updaters"
 
 const docker = new Docker()
@@ -17,11 +18,13 @@ const dbPass = "docker"
 jest.setTimeout(30000)
 
 describe("TestMassiveActionHandler", () => {
+  let runner: MigrationRunner
+  let migrations: Migration[]
   let actionReader: JsonActionReader
   let actionHandler: TestMassiveActionHandler
   let massiveInstance: any
   let db: any
-  let schema = ""
+  let schemaName = ""
 
   beforeAll(async (done) => {
     await dockerUtils.pullImage(docker, postgresImageName)
@@ -41,28 +44,38 @@ describe("TestMassiveActionHandler", () => {
       password: dbPass,
       port: 5432,
     })
-    await migrate.cyanaudit(massiveInstance.instance)
-    await massiveInstance.reload()
     done()
+  })
+
+  beforeEach(async () => {
+    schemaName = "s" + Math.random().toString(36).substring(7)
+    migrations = [
+      new Migration("createTodoTable", schemaName, "testHelpers/migration1.sql"),
+      new Migration("createTaskTable", schemaName, "testHelpers/migration2.sql"),
+    ]
+    runner = new MigrationRunner(
+      massiveInstance.instance,
+      migrations,
+      schemaName,
+    )
+    await runner.setup()
+    await runner.migrate()
+    await massiveInstance.reload()
+    db = massiveInstance[schemaName]
+    actionReader = new JsonActionReader(blockchains.blockchain)
+    actionHandler = new TestMassiveActionHandler(updaters, [], massiveInstance, schemaName)
+  })
+
+  afterEach(async () => {
+    await massiveInstance.instance.none(
+      "DROP SCHEMA $1:raw CASCADE;",
+      [schemaName],
+    )
   })
 
   afterAll(async (done) => {
     await dockerUtils.removePostgresContainer(docker, postgresContainerName)
     done()
-  })
-
-  beforeEach(async () => {
-    schema = Math.random().toString(36).substring(7)
-    await migrate.up(massiveInstance.instance, schema)
-    await massiveInstance.reload()
-    await massiveInstance.cyanaudit.fn_update_audit_fields(schema)
-    db = massiveInstance[schema]
-    actionReader = new JsonActionReader(blockchains.blockchain)
-    actionHandler = new TestMassiveActionHandler(updaters, [], massiveInstance, schema)
-  })
-
-  afterEach(async () => {
-    await migrate.dropSchema(massiveInstance.instance, schema)
   })
 
   it("populates database correctly", async () => {
