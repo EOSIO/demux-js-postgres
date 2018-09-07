@@ -13,7 +13,7 @@ const dbPass = "docker"
 
 class TestMigrationRunner extends MigrationRunner {
   public async _checkOrCreateSchema() { await this.checkOrCreateSchema() }
-  public async _checkOrCreateTable() { await this.checkOrCreateTable() }
+  public async _checkOrCreateTables() { await this.checkOrCreateTables() }
   public async _registerMigration(pgp: IDatabase<{}>, migrationName: string) {
     await this.registerMigration(pgp, migrationName)
   }
@@ -64,11 +64,10 @@ describe("Database setup", () => {
     const runner = new TestMigrationRunner(
       massiveInstance.instance,
       [],
-      "_migrations",
       "newschema",
     )
     await runner._checkOrCreateSchema()
-    await runner._checkOrCreateTable() // Schema needs something inside to be seen by Massive
+    await runner._checkOrCreateTables() // Schema needs something inside to be seen by Massive
     await massiveInstance.reload()
     expect(massiveInstance.newschema).toBeTruthy()
   })
@@ -77,11 +76,12 @@ describe("Database setup", () => {
     const runner = new TestMigrationRunner(
       massiveInstance.instance,
       [],
-      "_migrations",
     )
-    await runner._checkOrCreateTable()
+    await runner._checkOrCreateTables()
     await massiveInstance.reload()
     expect(massiveInstance._migrations).toBeTruthy()
+    expect(massiveInstance._index_state).toBeTruthy()
+    expect(massiveInstance._block_number_txid).toBeTruthy()
   })
 })
 
@@ -89,7 +89,7 @@ describe("MigrationRunner", () => {
   const containerName = "runner-test"
   let massiveInstance: any
   let db: any
-  let pgp: IDatabase
+  let pgp: IDatabase<{}>
   let schemaName = ""
   let runner: TestMigrationRunner
   let migrations: Migration[]
@@ -125,11 +125,10 @@ describe("MigrationRunner", () => {
     runner = new TestMigrationRunner(
       massiveInstance.instance,
       migrations,
-      "_migrations",
       schemaName,
     )
     await runner._checkOrCreateSchema()
-    await runner._checkOrCreateTable()
+    await runner._checkOrCreateTables()
     await massiveInstance.reload()
     db = massiveInstance[schemaName]
     pgp = massiveInstance.instance
@@ -149,7 +148,7 @@ describe("MigrationRunner", () => {
   })
 
   it("writes row to migration table", async () => {
-    await runner._registerMigration(massiveInstance.pgp, "mymigration")
+    await runner._registerMigration(pgp, "mymigration")
     const row = await db._migrations.findOne({ name: "mymigration" })
     expect(row).toHaveProperty("name")
     expect(row.name).toEqual("mymigration")

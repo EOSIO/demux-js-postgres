@@ -5,7 +5,6 @@ export class MigrationRunner {
   constructor(
     protected pgp: IDatabase<{}>,
     protected migrations: Migration[],
-    protected tableName: string = "_migrations",
     protected schemaName: string = "public",
   ) {
     const migrationNames = migrations.map((f) => f.name)
@@ -17,7 +16,7 @@ export class MigrationRunner {
 
   public async migrate(pgp: IDatabase<{}> = this.pgp) {
     await this.checkOrCreateSchema()
-    await this.checkOrCreateTable()
+    await this.checkOrCreateTables()
     const unapplied = await this.getUnappliedMigrations()
     for (const migration of unapplied) {
       await this.applyMigration(pgp, migration)
@@ -31,13 +30,29 @@ export class MigrationRunner {
 
   // public async revertTo(migrationName) {} // Down migrations
 
-  protected async checkOrCreateTable() {
+  protected async checkOrCreateTables() {
     await this.pgp.none(`
-      CREATE TABLE IF NOT EXISTS $1:raw.$2:raw(
+      CREATE TABLE IF NOT EXISTS $1:raw._migrations(
         id serial PRIMARY KEY,
         name TEXT
       );
-    `, [this.schemaName, this.tableName])
+    `, [this.schemaName])
+
+    await this.pgp.none(`
+      CREATE TABLE IF NOT EXISTS $1:raw._index_state (
+        id serial PRIMARY KEY,
+        block_number integer NOT NULL,
+        block_hash text NOT NULL,
+        is_replay boolean NOT NULL
+      );
+    `, [this.schemaName])
+
+    await this.pgp.none(`
+      CREATE TABLE IF NOT EXISTS $1:raw._block_number_txid (
+        block_number integer PRIMARY KEY,
+        txid bigint NOT NULL
+      );
+    `, [this.schemaName])
   }
 
   protected async checkOrCreateSchema() {
@@ -47,9 +62,9 @@ export class MigrationRunner {
   }
 
   protected async registerMigration(pgp: IDatabase<{}>, migrationName: string) {
-    await this.pgp.none(`
-      INSERT INTO $1:raw.$2:raw (name) VALUES ($3);
-    `, [this.schemaName, this.tableName, migrationName])
+    await pgp.none(`
+      INSERT INTO $1:raw._migrations (name) VALUES ($2);
+    `, [this.schemaName, migrationName])
   }
 
   protected async getUnappliedMigrations(): Promise<Migration[]> {
@@ -60,8 +75,8 @@ export class MigrationRunner {
 
   private async getMigrationHistory(): Promise<string[]> {
     const migrationRows = await this.pgp.manyOrNone(`
-      SELECT name FROM $1:raw.$2:raw;
-    `, [this.schemaName, this.tableName])
+      SELECT name FROM $1:raw._migrations;
+    `, [this.schemaName])
     return migrationRows.map((row) => row.name)
   }
 
