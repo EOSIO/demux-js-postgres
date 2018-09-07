@@ -2,6 +2,7 @@ import { IDatabase } from "pg-promise"
 import { Migration } from "./Migration"
 
 export class MigrationRunner {
+  private isSetUp: boolean = false
   constructor(
     protected pgp: IDatabase<{}>,
     protected migrations: Migration[],
@@ -18,9 +19,11 @@ export class MigrationRunner {
     await this.checkOrCreateSchema()
     await this.checkOrCreateTables()
     await this.installCyanAudit()
+    this.isSetUp = true
   }
 
   public async migrate(pgp: IDatabase<{}> = this.pgp) {
+    await this.throwIfNotSetup()
     const unapplied = await this.getUnappliedMigrations()
     for (const migration of unapplied) {
       await this.applyMigration(pgp, migration)
@@ -37,7 +40,7 @@ export class MigrationRunner {
 
   protected async checkOrCreateTables() {
     await this.pgp.none(`
-      CREATE TABLE IF NOT EXISTS $1:raw._migrations(
+      CREATE TABLE IF NOT EXISTS $1:raw._migration(
         id serial PRIMARY KEY,
         name TEXT
       );
@@ -81,7 +84,7 @@ export class MigrationRunner {
 
   protected async registerMigration(pgp: IDatabase<{}>, migrationName: string) {
     await pgp.none(`
-      INSERT INTO $1:raw._migrations (name) VALUES ($2);
+      INSERT INTO $1:raw._migration (name) VALUES ($2);
     `, [this.schemaName, migrationName])
   }
 
@@ -93,7 +96,7 @@ export class MigrationRunner {
 
   private async getMigrationHistory(): Promise<string[]> {
     const migrationRows = await this.pgp.manyOrNone(`
-      SELECT name FROM $1:raw._migrations;
+      SELECT name FROM $1:raw._migration;
     `, [this.schemaName])
     return migrationRows.map((row) => row.name)
   }
@@ -113,6 +116,44 @@ export class MigrationRunner {
           "Mismatched migrations. Make sure migrations are in the same order that they have " +
           "been previously run.")
       }
+    }
+  }
+
+  private async throwIfNotSetup() {
+    if (!this.isSetUp) {
+      await this.checkSchema(this.schemaName)
+      await this.checkTable("_migration")
+      await this.checkTable("_index_state")
+      await this.checkTable("_block_number_txid")
+      await this.checkSchema("cyanaudit")
+      this.isSetUp = true
+    }
+  }
+
+  private async checkSchema(schema: string) {
+    const { exists } = await this.pgp.one(`
+      SELECT EXISTS(SELECT 1 FROM pg_namespace WHERE nspname = $1);
+      `,
+      [schema],
+    )
+    if (!exists) {
+      throw Error(`Schema '${schema}' does not exist. Make sure you have run \`setup()\` before migrating`)
+    }
+  }
+
+  private async checkTable(table: string) {
+    const { exists } = await this.pgp.one(`
+      SELECT EXISTS (
+        SELECT 1
+        FROM   information_schema.tables
+        WHERE  table_schema = $1
+        AND    table_name = $2
+      );
+      `,
+      [this.schemaName, table],
+    )
+    if (!exists) {
+      throw Error(`Table '${table}' does not exist. Make sure you have run \`setup()\` before migrating`)
     }
   }
 

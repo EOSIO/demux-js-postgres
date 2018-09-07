@@ -79,10 +79,28 @@ describe("Database setup", () => {
     )
     await runner.setup()
     await massiveInstance.reload()
-    expect(massiveInstance._migrations).toBeTruthy()
+    expect(massiveInstance._migration).toBeTruthy()
     expect(massiveInstance._index_state).toBeTruthy()
     expect(massiveInstance._block_number_txid).toBeTruthy()
     expect(massiveInstance.cyanaudit).toBeTruthy()
+  })
+
+  it("throws when trying to migrate and not set up", async () => {
+    const runner = new TestMigrationRunner(
+      massiveInstance.instance,
+      [],
+      "doesntexist",
+    )
+    const schemaError = Error(
+      `Schema 'doesntexist' does not exist. Make sure you have run \`setup()\` before migrating`,
+    )
+    await expect(runner.migrate()).rejects.toEqual(schemaError)
+
+    await runner._checkOrCreateSchema()
+    const tableError = Error(
+      `Table '_migration' does not exist. Make sure you have run \`setup()\` before migrating`,
+    )
+    await expect(runner.migrate()).rejects.toEqual(tableError)
   })
 })
 
@@ -149,7 +167,7 @@ describe("MigrationRunner", () => {
 
   it("writes row to migration table", async () => {
     await runner._registerMigration(pgp, "mymigration")
-    const row = await db._migrations.findOne({ name: "mymigration" })
+    const row = await db._migration.findOne({ name: "mymigration" })
     expect(row).toHaveProperty("name")
     expect(row.name).toEqual("mymigration")
   })
