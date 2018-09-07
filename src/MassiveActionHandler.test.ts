@@ -26,11 +26,20 @@ describe("TestMassiveActionHandler", () => {
   beforeAll(async (done) => {
     await dockerUtils.pullImage(docker, postgresImageName)
     await dockerUtils.removePostgresContainer(docker, postgresContainerName)
-    await dockerUtils.startPostgresContainer(docker, postgresImageName, postgresContainerName, dbName, dbUser, dbPass)
+    await dockerUtils.startPostgresContainer(
+      docker,
+      postgresImageName,
+      postgresContainerName,
+      dbName,
+      dbUser,
+      dbPass,
+      5432,
+    )
     massiveInstance = await massive({
       database: dbName,
       user: dbUser,
       password: dbPass,
+      port: 5432,
     })
     await migrate.cyanaudit(massiveInstance.instance)
     await massiveInstance.reload()

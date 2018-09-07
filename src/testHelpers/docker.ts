@@ -54,12 +54,14 @@ export async function startPostgresContainer(
   dbName: string,
   dbUser: string,
   dbPass: string,
+  hostPort: number = 5432,
 ) {
+  const hostPortString = hostPort.toString()
   const container = await docker.createContainer({
     Image: imageName,
     name: containerName,
     Tty: false,
-    PortBindings: { "5432/tcp": [{ HostPort: "5432" }] },
+    PortBindings: { "5432/tcp": [{ HostPort: hostPortString }] },
     Env: [
       `POSTGRES_DB=${dbName}`,
       `POSTGRES_USER=${dbUser}`,
