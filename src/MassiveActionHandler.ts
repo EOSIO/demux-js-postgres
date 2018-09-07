@@ -2,7 +2,8 @@ import { AbstractActionHandler, Block, Effect, IndexState, Updater } from "demux
 
 /**
  * Connects to a Postgres database using [MassiveJS](https://github.com/dmfay/massive-js). This expects that
- * the database is already migrated, including an `_index_state` table. Refer to the tests for more information.
+ * the database has cyanaudit installed, and has `_index_state` and `_block_number_txid` tables. Use a
+ * MigrationRunner instance's `setup` method to bootstrap this process.
  */
 export class MassiveActionHandler extends AbstractActionHandler {
   protected schemaInstance: any

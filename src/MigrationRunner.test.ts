@@ -72,16 +72,17 @@ describe("Database setup", () => {
     expect(massiveInstance.newschema).toBeTruthy()
   })
 
-  it("creates the table", async () => {
+  it("creates tables and installs cyanaudit", async () => {
     const runner = new TestMigrationRunner(
       massiveInstance.instance,
       [],
     )
-    await runner._checkOrCreateTables()
+    await runner.setup()
     await massiveInstance.reload()
     expect(massiveInstance._migrations).toBeTruthy()
     expect(massiveInstance._index_state).toBeTruthy()
     expect(massiveInstance._block_number_txid).toBeTruthy()
+    expect(massiveInstance.cyanaudit).toBeTruthy()
   })
 })
 
@@ -127,8 +128,7 @@ describe("MigrationRunner", () => {
       migrations,
       schemaName,
     )
-    await runner._checkOrCreateSchema()
-    await runner._checkOrCreateTables()
+    await runner.setup()
     await massiveInstance.reload()
     db = massiveInstance[schemaName]
     pgp = massiveInstance.instance

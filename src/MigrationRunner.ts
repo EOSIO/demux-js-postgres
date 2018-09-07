@@ -14,9 +14,13 @@ export class MigrationRunner {
     }
   }
 
-  public async migrate(pgp: IDatabase<{}> = this.pgp) {
+  public async setup() {
     await this.checkOrCreateSchema()
     await this.checkOrCreateTables()
+    await this.installCyanAudit()
+  }
+
+  public async migrate(pgp: IDatabase<{}> = this.pgp) {
     const unapplied = await this.getUnappliedMigrations()
     for (const migration of unapplied) {
       await this.applyMigration(pgp, migration)
@@ -25,6 +29,7 @@ export class MigrationRunner {
 
   protected async applyMigration(pgp: IDatabase<{}>, migration: Migration) {
     await migration.up(pgp)
+    await this.refreshCyanAudit()
     await this.registerMigration(pgp, migration.name)
   }
 
@@ -59,6 +64,19 @@ export class MigrationRunner {
     await this.pgp.none(`
       CREATE SCHEMA IF NOT EXISTS $1:raw;
     `, [this.schemaName])
+  }
+
+  protected async installCyanAudit() {
+    const cyanaudit = new Migration("", "", "cyanaudit/cyanaudit--2.2.0.sql")
+    await cyanaudit.up(this.pgp)
+    await this.refreshCyanAudit()
+  }
+
+  protected async refreshCyanAudit(pgp: IDatabase<{}> = this.pgp) {
+    await pgp.many(
+      "SELECT cyanaudit.fn_update_audit_fields($1)",
+      [this.schemaName],
+    )
   }
 
   protected async registerMigration(pgp: IDatabase<{}>, migrationName: string) {
