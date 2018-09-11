@@ -1,6 +1,6 @@
 {
   "name": "demux-postgres",
-  "version": "0.0.7",
+  "version": "2.0.0",
   "description": "Demux-js Action Handler implementation for Postgres databases",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -12,8 +12,8 @@
   "license": "MIT",
   "devDependencies": {
     "@types/dockerode": "^2.5.5",
-    "@types/massive": "^4.6.1",
     "@types/jest": "^23.1.4",
+    "@types/massive": "^4.6.1",
     "@types/node": "^10.5.1",
     "@types/request-promise-native": "^1.0.15",
     "dockerode": "^2.5.5",
@@ -29,21 +29,19 @@
     "typescript": "^2.9.2"
   },
   "dependencies": {
-    "demux": "^1.0.3",
+    "demux": "^2.0.0",
     "massive": "^5.2.0",
-    "pg-promise": "8.4.5",
-    "request": "^2.87.0",
-    "request-promise-native": "^1.0.5"
+    "pg-promise": "8.4.6"
   },
   "peerDependencies": {
-    "demux": "^1.0.3"
+    "demux": "^2.0.0"
   },
   "scripts": {
     "release": "release-it",
     "compile": "tsc",
     "watch": "tsc -w",
     "lint": "tslint -c tslint.json src/**/*.ts",
-    "test": "jest",
+    "test": "PGPASSWORD=docker jest",
     "build-docs": "./build-docs.sh"
   },
   "jest": {
