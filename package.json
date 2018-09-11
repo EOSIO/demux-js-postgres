@@ -1,6 +1,6 @@
 {
   "name": "demux-postgres",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Demux-js Action Handler implementation for Postgres databases",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
