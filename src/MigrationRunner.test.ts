@@ -1,6 +1,6 @@
 import Docker from "dockerode"
 import massive from "massive"
-import {IDatabase} from "pg-promise"
+import { IDatabase } from "pg-promise"
 import { Migration } from "./Migration"
 import { MigrationRunner } from "./MigrationRunner"
 import * as dockerUtils from "./testHelpers/docker"
