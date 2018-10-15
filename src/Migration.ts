@@ -27,9 +27,7 @@ export class Migration {
     await pgp.none(this.downQueryFile)
   }
 
-  private loadQueryFile(file: string) {
-    let fullPath: string
-    fullPath = path.join(__dirname, file)
+  private loadQueryFile(filepath: string) {
     const options = {
       minify: true,
       noWarnings: true,
@@ -37,7 +35,7 @@ export class Migration {
         schema: this.schema,
       },
     }
-    const qf = new QueryFile(fullPath, options)
+    const qf = new QueryFile(filepath, options)
     if (qf.error) {
       throw qf.error
     }

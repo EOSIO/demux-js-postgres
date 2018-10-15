@@ -1,5 +1,6 @@
 import Docker from "dockerode"
 import massive from "massive"
+import * as path from "path"
 import { IDatabase } from "pg-promise"
 import { Migration } from "./Migration"
 import { MigrationRunner } from "./MigrationRunner"
@@ -10,6 +11,8 @@ const postgresImageName = "postgres:10.4"
 const dbName = "migrationrunnertest"
 const dbUser = "docker"
 const dbPass = "docker"
+
+const baseDir = path.join(path.resolve("./"), "src")
 
 class TestMigrationRunner extends MigrationRunner {
   public async _checkOrCreateSchema() { await this.checkOrCreateSchema() }
@@ -137,9 +140,9 @@ describe("MigrationRunner", () => {
   beforeEach(async (done) => {
     schemaName = randomSchemaName()
     migrations = [
-      new Migration("createTodoTable", schemaName, "testHelpers/migration1.sql"),
-      new Migration("createTaskTable", schemaName, "testHelpers/migration2.sql"),
-      new Migration("createAssigneeTable", schemaName, "testHelpers/migration3.sql"),
+      new Migration("createTodoTable", schemaName, path.join(baseDir, "testHelpers/migration1.sql")),
+      new Migration("createTaskTable", schemaName, path.join(baseDir, "testHelpers/migration2.sql")),
+      new Migration("createAssigneeTable", schemaName, path.join(baseDir, "testHelpers/migration3.sql")),
     ]
     runner = new TestMigrationRunner(
       massiveInstance.instance,
@@ -214,7 +217,7 @@ describe("MigrationRunner", () => {
       new Migration(
         "mymigration",
         schemaName,
-        "testHelpers/migration1.sql",
+        path.join(baseDir, "testHelpers/migration1.sql"),
       ),
     )
     const error = new Error(
