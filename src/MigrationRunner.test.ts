@@ -1,9 +1,9 @@
 import Docker from "dockerode"
+import massive from "massive"
+import { IDatabase } from "pg-promise"
 import { Migration } from "./Migration"
 import { MigrationRunner } from "./MigrationRunner"
 import * as dockerUtils from "./testHelpers/docker"
-import massive from "massive"
-import {IDatabase} from "pg-promise"
 
 const docker = new Docker()
 const postgresImageName = "postgres:10.4"
