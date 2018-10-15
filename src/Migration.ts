@@ -1,4 +1,3 @@
-import * as path from "path"
 import { IDatabase, QueryFile } from "pg-promise"
 
 export class Migration {
