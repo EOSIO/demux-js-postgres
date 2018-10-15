@@ -1,5 +1,6 @@
 import { IDatabase } from "pg-promise"
 import { Migration } from "./Migration"
+import * as path from "path"
 
 export class MigrationRunner {
   private isSetUp: boolean = false
@@ -70,7 +71,7 @@ export class MigrationRunner {
   }
 
   protected async installCyanAudit() {
-    const cyanaudit = new Migration("", "", "cyanaudit/cyanaudit--2.2.0.sql")
+    const cyanaudit = new Migration("", "", path.join(__dirname, "cyanaudit/cyanaudit--2.2.0.sql"))
     await cyanaudit.up(this.pgp)
     await this.refreshCyanAudit()
   }

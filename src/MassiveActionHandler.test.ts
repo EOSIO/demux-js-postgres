@@ -1,5 +1,6 @@
 import Docker from "dockerode"
 import massive from "massive"
+import * as path from "path"
 import { Migration } from "./Migration"
 import { MigrationRunner } from "./MigrationRunner"
 import blockchains from "./testHelpers/blockchains"
@@ -16,6 +17,8 @@ const dbUser = "docker"
 const dbPass = "docker"
 
 jest.setTimeout(30000)
+
+const baseDir = path.join(path.resolve("./"), "src")
 
 describe("TestMassiveActionHandler", () => {
   let runner: MigrationRunner
@@ -50,8 +53,8 @@ describe("TestMassiveActionHandler", () => {
   beforeEach(async () => {
     schemaName = "s" + Math.random().toString(36).substring(7)
     migrations = [
-      new Migration("createTodoTable", schemaName, "testHelpers/migration1.sql"),
-      new Migration("createTaskTable", schemaName, "testHelpers/migration2.sql"),
+      new Migration("createTodoTable", schemaName, path.join(baseDir, "testHelpers/migration1.sql")),
+      new Migration("createTaskTable", schemaName, path.join(baseDir, "testHelpers/migration2.sql")),
     ]
     runner = new MigrationRunner(
       massiveInstance.instance,
