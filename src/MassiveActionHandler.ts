@@ -1,4 +1,4 @@
-import { AbstractActionHandler, Block, HandlerVersion } from "demux"
+import { AbstractActionHandler, Block, HandlerVersion, IndexState } from "demux"
 
 /**
  * Connects to a Postgres database using [MassiveJS](https://github.com/dmfay/massive-js). This expects that
@@ -67,7 +67,7 @@ export class MassiveActionHandler extends AbstractActionHandler {
     })
   }
 
-  protected async loadIndexState(): Promise<MigrationIndexState> {
+  protected async loadIndexState(): Promise<IndexState> {
     const defaultIndexState = {
       block_number: 0,
       block_hash: "",
@@ -80,8 +80,6 @@ export class MassiveActionHandler extends AbstractActionHandler {
       blockHash: indexState.block_hash,
       handlerVersionName: indexState.handler_version_name,
       isReplay: indexState.is_replay,
-    }
-  }
     }
   }
 
