@@ -1,4 +1,4 @@
-import { AbstractActionHandler, Block, Effect, IndexState, Updater } from "demux"
+import { AbstractActionHandler, Block, HandlerVersion } from "demux"
 
 /**
  * Connects to a Postgres database using [MassiveJS](https://github.com/dmfay/massive-js). This expects that
@@ -9,12 +9,11 @@ export class MassiveActionHandler extends AbstractActionHandler {
   protected schemaInstance: any
 
   constructor(
-    protected updaters: Updater[],
-    protected effects: Effect[],
+    protected handlerVersions: HandlerVersion[],
     protected massiveInstance: any,
     protected dbSchema: string = "public",
   ) {
-    super(updaters, effects)
+    super(handlerVersions)
     if (this.dbSchema === "public") {
       this.schemaInstance = this.massiveInstance
     } else {
@@ -44,7 +43,13 @@ export class MassiveActionHandler extends AbstractActionHandler {
     })
   }
 
-  protected async updateIndexState(state: any, block: Block, isReplay: boolean, context: any) {
+  protected async updateIndexState(
+    state: any,
+    block: Block,
+    isReplay: boolean,
+    handlerVersionName: string,
+    context: any,
+  ) {
     const { blockInfo } = block
     const fromDb = (await state._index_state.findOne({ id: 1 })) || {}
     const toSave = {
@@ -52,6 +57,7 @@ export class MassiveActionHandler extends AbstractActionHandler {
       block_number: blockInfo.blockNumber,
       block_hash: blockInfo.blockHash,
       is_replay: isReplay,
+      handler_version_name: handlerVersionName,
     }
     await state._index_state.save(toSave)
 
@@ -61,15 +67,21 @@ export class MassiveActionHandler extends AbstractActionHandler {
     })
   }
 
-  protected async loadIndexState(): Promise<IndexState> {
-    const indexState = await this.schemaInstance._index_state.findOne({ id: 1 })
-    if (indexState) {
-      return {
-        blockNumber: indexState.block_number,
-        blockHash: indexState.block_hash,
-      }
-    } else {
-      return { blockNumber: 0, blockHash: "" }
+  protected async loadIndexState(): Promise<MigrationIndexState> {
+    const defaultIndexState = {
+      block_number: 0,
+      block_hash: "",
+      handler_version_name: "v1",
+      is_replay: false,
+    }
+    const indexState = await this.schemaInstance._index_state.findOne({ id: 1 }) || defaultIndexState
+    return {
+      blockNumber: indexState.block_number,
+      blockHash: indexState.block_hash,
+      handlerVersionName: indexState.handler_version_name,
+      isReplay: indexState.is_replay,
+    }
+  }
     }
   }
 

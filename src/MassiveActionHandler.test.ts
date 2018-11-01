@@ -66,7 +66,15 @@ describe("TestMassiveActionHandler", () => {
     await massiveInstance.reload()
     db = massiveInstance[schemaName]
     actionReader = new JsonActionReader(blockchains.blockchain)
-    actionHandler = new TestMassiveActionHandler(updaters, [], massiveInstance, schemaName)
+    actionHandler = new TestMassiveActionHandler(
+      [{
+        versionName: "v1",
+        updaters,
+        effects: [],
+      }],
+      massiveInstance,
+      schemaName,
+    )
   })
 
   afterEach(async () => {

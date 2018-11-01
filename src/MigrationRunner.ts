@@ -49,10 +49,11 @@ export class MigrationRunner {
 
     await this.pgp.none(`
       CREATE TABLE IF NOT EXISTS $1:raw._index_state (
-        id serial PRIMARY KEY,
-        block_number integer NOT NULL,
-        block_hash text NOT NULL,
-        is_replay boolean NOT NULL
+        id                   serial  PRIMARY KEY,
+        block_number         integer NOT NULL,
+        block_hash           text    NOT NULL,
+        is_replay            boolean NOT NULL,
+        handler_version_name text    DEFAULT 'v1'
       );
     `, [this.schemaName])
 
