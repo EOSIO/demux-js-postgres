@@ -39,13 +39,13 @@ describe("TestMassiveActionHandler", () => {
       dbName,
       dbUser,
       dbPass,
-      5432,
+      6457,
     )
     massiveInstance = await massive({
       database: dbName,
       user: dbUser,
       password: dbPass,
-      port: 5432,
+      port: 6457,
     })
     done()
   })
