@@ -5,9 +5,21 @@ import { Migration } from "./Migration"
 import { MigrationRunner } from "./MigrationRunner"
 
 /**
- * Connects to a Postgres database using [MassiveJS](https://github.com/dmfay/massive-js). This expects that
- * the database has cyanaudit installed, and has `_index_state` and `_block_number_txid` tables. Use a
- * MigrationRunner instance's `setup` method to bootstrap this process.
+ * Connects to a Postgres database using [MassiveJS](https://github.com/dmfay/massive-js). Make sure to call
+ * `setupDatabase` to create the needed internally-used tables `_migration`, `_index_state`, and `_block_number_txid`.
+ * This will also automatically migrate the database with the provided MigrationSequence if named `init`.
+ *
+ * @param handlerVersions     See `HandlerVersion` parameter from demux-js
+ *
+ * @param massiveInstance     An instance of of a `massive` object provided by MassiveJS, connected to the database
+ *                            you want this instance to interface with
+ *
+ * @param dbSchema            The name of the schema you would like to use. If it doesn't exist, it will be created when
+ *                            `setupDatabase` is called.
+ *
+ * @param migrationSequences  An array of `MigrationSequence`s available to call via
+ *                            `state.migrate(<name of sequence>)`, commonly from `Updater`'s `apply` functions that also
+ *                            change the `HandlerVersion`.
  */
 export class MassiveActionHandler extends AbstractActionHandler {
   protected allMigrations: Migration[] = []
@@ -31,6 +43,10 @@ export class MassiveActionHandler extends AbstractActionHandler {
     }
   }
 
+  /**
+   * Sets up the database by idempotently creating the schema, installing CyanAudit, creates internally used tables, and
+   * runs any initial migration sequences provided.
+   */
   public async setupDatabase(initSequenceName: string = "init") {
     const migrationRunner = new MigrationRunner(this.massiveInstance.instance, [], this.dbSchema)
     await migrationRunner.setup()
