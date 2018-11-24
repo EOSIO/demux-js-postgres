@@ -2,7 +2,6 @@ import Docker from "dockerode"
 import massive from "massive"
 import * as path from "path"
 import { Migration } from "./Migration"
-import { MigrationRunner } from "./MigrationRunner"
 import blockchains from "./testHelpers/blockchains"
 import * as dockerUtils from "./testHelpers/docker"
 import { JsonActionReader } from "./testHelpers/JsonActionReader"
@@ -21,7 +20,6 @@ jest.setTimeout(30000)
 const baseDir = path.join(path.resolve("./"), "src")
 
 describe("TestMassiveActionHandler", () => {
-  let runner: MigrationRunner
   let migrations: Migration[]
   let actionReader: JsonActionReader
   let actionHandler: TestMassiveActionHandler
@@ -56,15 +54,10 @@ describe("TestMassiveActionHandler", () => {
       new Migration("createTodoTable", schemaName, path.join(baseDir, "testHelpers/migration1.sql")),
       new Migration("createTaskTable", schemaName, path.join(baseDir, "testHelpers/migration2.sql")),
     ]
-    runner = new MigrationRunner(
-      massiveInstance.instance,
+    const migrationSequence = {
       migrations,
-      schemaName,
-    )
-    await runner.setup()
-    await runner.migrate()
-    await massiveInstance.reload()
-    db = massiveInstance[schemaName]
+      sequenceName: "init",
+    }
     actionReader = new JsonActionReader(blockchains.blockchain)
     actionHandler = new TestMassiveActionHandler(
       [{
@@ -74,7 +67,11 @@ describe("TestMassiveActionHandler", () => {
       }],
       massiveInstance,
       schemaName,
+      [migrationSequence],
     )
+    await actionHandler.setupDatabase()
+    await massiveInstance.reload()
+    db = massiveInstance[schemaName]
   })
 
   afterEach(async () => {
