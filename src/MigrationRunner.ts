@@ -1,7 +1,6 @@
 import { IDatabase } from "pg-promise"
 import { Migration } from "./Migration"
 import * as path from "path"
-import {MigrationSequence} from "./interfaces"
 
 export class MigrationRunner {
   private isSetUp: boolean = false
@@ -28,21 +27,17 @@ export class MigrationRunner {
     this.isSetUp = true
   }
 
-  public async migrate(sequenceName: string = "default", blockNumber: number = 0, pgp: IDatabase<{}> = this.pgp) {
+  public async migrate(
+    sequenceName: string = "default",
+    blockNumber: number = 0,
+    pgp: IDatabase<{}> = this.pgp,
+    initial: boolean = false,
+  ) {
     await this.throwIfNotSetup()
-    const unapplied = await this.getUnappliedMigrations()
+    const unapplied = await this.getUnappliedMigrations(initial)
     for (const migration of unapplied) {
       await this.applyMigration(pgp, migration, sequenceName, blockNumber)
     }
-  }
-
-  public async migrateSequence(migrationSequence: MigrationSequence, blockNumber: number, pgp: IDatabase<{}> = this.pgp) {
-    this.addMigrations(migrationSequence.migrations)
-    await this.migrate(migrationSequence.sequenceName, blockNumber, pgp)
-  }
-
-  public addMigrations(migrations: Migration[]) {
-    this.migrations.push(...migrations)
   }
 
   protected async applyMigration(pgp: IDatabase<{}>, migration: Migration, sequenceName: string, blockNumber: number) {
@@ -111,9 +106,9 @@ export class MigrationRunner {
     `, [this.schemaName, migrationName, sequenceName, blockNumber])
   }
 
-  protected async getUnappliedMigrations(): Promise<Migration[]> {
+  protected async getUnappliedMigrations(initial: boolean = false): Promise<Migration[]> {
     const migrationHistory = await this.getMigrationHistory()
-    await this.validateMigrationHistory(migrationHistory)
+    await this.validateMigrationHistory(migrationHistory, initial)
     return this.migrations.slice(migrationHistory.length)
   }
 
@@ -124,10 +119,12 @@ export class MigrationRunner {
     return migrationRows.map((row) => row.name)
   }
 
-  private validateMigrationHistory(migrationHistory: string[]) {
+  private validateMigrationHistory(migrationHistory: string[], initial: boolean = false) {
     // Make sure that the migrations in this.migrations match to the migration history
     for (let i = 0; i < migrationHistory.length; i++) {
-      if (i === migrationHistory.length) {
+      if (i === migrationHistory.length && initial) {
+        break
+      } else if (i === migrationHistory.length) {
         // tslint:disable-next-line
         throw new Error(
           "There are more migrations applied to the database than there are present on this " +

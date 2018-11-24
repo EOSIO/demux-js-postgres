@@ -10,7 +10,6 @@ import { MigrationRunner } from "./MigrationRunner"
  * MigrationRunner instance's `setup` method to bootstrap this process.
  */
 export class MassiveActionHandler extends AbstractActionHandler {
-  protected schemaInstance: any
   protected allMigrations: Migration[] = []
   protected migrationSequenceByName: { [key: string]: MigrationSequence } = {}
 
@@ -21,11 +20,6 @@ export class MassiveActionHandler extends AbstractActionHandler {
     protected migrationSequences: MigrationSequence[] = [],
   ) {
     super(handlerVersions)
-    if (this.dbSchema === "public") {
-      this.schemaInstance = this.massiveInstance
-    } else {
-      this.schemaInstance = this.massiveInstance[this.dbSchema]
-    }
     for (const migrationSequence of migrationSequences) {
       if (this.migrationSequenceByName.hasOwnProperty(migrationSequence.sequenceName)) {
         throw new Error("Migration sequences must have unique names.")
@@ -38,10 +32,11 @@ export class MassiveActionHandler extends AbstractActionHandler {
   }
 
   public async setupDatabase(initSequenceName: string = "init") {
-    const migrationRunner = new MigrationRunner(this.massiveInstance.pgp, [], this.dbSchema)
+    const migrationRunner = new MigrationRunner(this.massiveInstance.instance, [], this.dbSchema)
     await migrationRunner.setup()
+    await this.massiveInstance.reload()
     if (this.migrationSequenceByName[initSequenceName]) {
-      await this.migrate(initSequenceName, this.massiveInstance.pgp, true)
+      await this.migrate(initSequenceName, this.massiveInstance.instance, true)
     } else if (initSequenceName === "init") {
       console.warn("No 'init' Migration sequence was provided, nor was a different initSequenceName. " +
                    "No initial migrations have been run.")
@@ -50,9 +45,15 @@ export class MassiveActionHandler extends AbstractActionHandler {
     }
   }
 
+  /**
+   * Migrates the database by the given sequenceName. There must be a `MigrationSequence` with this name, or this will
+   * throw an error.
+   *
+   * @param sequenceName  The name of the MigrationSequence to be run.
+   */
   public async migrate(
     sequenceName: string,
-    pgp: IDatabase<{}> = this.massiveInstance.pgp,
+    pgp: IDatabase<{}> = this.massiveInstance.instance,
     initial: boolean = false,
   ) {
     const migrationSequence = this.migrationSequenceByName[sequenceName]
@@ -64,13 +65,22 @@ export class MassiveActionHandler extends AbstractActionHandler {
       ranMigrations = await this.loadRanMigrations()
     }
     const extendedMigrations = ranMigrations.concat(migrationSequence.migrations)
-    const migrationRunner = new MigrationRunner(this.massiveInstance.pgp, extendedMigrations, this.dbSchema, true)
+    const migrationRunner = new MigrationRunner(this.massiveInstance.instance, extendedMigrations, this.dbSchema, true)
     await migrationRunner.migrate(
       migrationSequence.sequenceName,
       this.lastProcessedBlockNumber + 1,
       pgp,
       initial,
     )
+    await this.massiveInstance.reload()
+  }
+
+  protected get schemaInstance(): any {
+    if (this.dbSchema === "public") {
+      return this.massiveInstance
+    } else {
+      return this.massiveInstance[this.dbSchema]
+    }
   }
 
   protected async handleWithState(handle: (state: any, context?: any) => void): Promise<void> {
