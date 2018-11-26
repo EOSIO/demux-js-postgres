@@ -203,7 +203,7 @@ export class MassiveActionHandler extends AbstractActionHandler {
   private warnOverwrite(db: any, toOverwrite: string): void {
     if (db.hasOwnProperty(toOverwrite)) {
       console.warn(`Assignment of '${toOverwrite}' on Massive object instance is overwriting property of the same ` +
-                            "name. Please use a different table or schema name.")
+                   "name. Please use a different table or schema name.")
     }
   }
 }

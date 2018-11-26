@@ -32,4 +32,8 @@ export class JsonActionReader extends AbstractActionReader {
     }
     return block
   }
+
+  public async getLastIrreversibleBlockNumber(): Promise<number> {
+    return this.getHeadBlockNumber()
+  }
 }
