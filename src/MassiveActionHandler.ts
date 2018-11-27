@@ -194,10 +194,10 @@ export class MassiveActionHandler extends AbstractActionHandler {
       },
     )
     for (const { block_number: rollbackNumber, txid } of blockNumberTxIds) {
-      console.info(`ROLLING BACK BLOCK ${rollbackNumber}`)
+      this.log.info(`ROLLING BACK BLOCK ${rollbackNumber}`)
       await this.massiveInstance.cyanaudit.fn_undo_transaction(txid)
     }
-    console.info(`Rollback complete!`)
+    this.log.info(`Rollback complete!`)
   }
 
   private warnOverwrite(db: any, toOverwrite: string): void {
