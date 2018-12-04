@@ -17,10 +17,22 @@ const baseDir = path.join(path.resolve("./"), "src")
 class TestMigrationRunner extends MigrationRunner {
   public async _checkOrCreateSchema() { await this.checkOrCreateSchema() }
   public async _checkOrCreateTables() { await this.checkOrCreateTables() }
-  public async _registerMigration(pgp: IDatabase<{}>, migrationName: string) {
-    await this.registerMigration(pgp, migrationName)
+  public async _registerMigration(
+    pgp: IDatabase<{}>,
+    migrationName: string,
+    sequenceName: string,
+    blockNumber: number,
+  ) {
+    await this.registerMigration(pgp, migrationName, sequenceName, blockNumber)
   }
-  public async _applyMigration(pgp: IDatabase<{}>, migration: Migration) { await this.applyMigration(pgp, migration) }
+  public async _applyMigration(
+    pgp: IDatabase<{}>,
+    migration: Migration,
+    sequenceName: string,
+    blockNumber: number,
+  ) {
+    await this.applyMigration(pgp, migration, sequenceName, blockNumber)
+  }
   public async _getUnappliedMigrations() { return await this.getUnappliedMigrations() }
 }
 
@@ -97,13 +109,13 @@ describe("Database setup", () => {
     const schemaError = Error(
       `Schema 'doesntexist' does not exist. Make sure you have run \`setup()\` before migrating`,
     )
-    await expect(runner.migrate()).rejects.toEqual(schemaError)
+    await expect(runner.migrate("init", 1)).rejects.toEqual(schemaError)
 
     await runner._checkOrCreateSchema()
     const tableError = Error(
       `Table '_migration' does not exist. Make sure you have run \`setup()\` before migrating`,
     )
-    await expect(runner.migrate()).rejects.toEqual(tableError)
+    await expect(runner.migrate("init", 1)).rejects.toEqual(tableError)
   })
 })
 
@@ -169,7 +181,7 @@ describe("MigrationRunner", () => {
   })
 
   it("writes row to migration table", async () => {
-    await runner._registerMigration(pgp, "mymigration")
+    await runner._registerMigration(pgp, "mymigration", "init", 1)
     const row = await db._migration.findOne({ name: "mymigration" })
     expect(row).toHaveProperty("name")
     expect(row.name).toEqual("mymigration")
@@ -179,12 +191,12 @@ describe("MigrationRunner", () => {
     const unappliedBefore = await runner._getUnappliedMigrations()
     expect(unappliedBefore).toEqual(migrations)
 
-    await runner._applyMigration(pgp, migrations[0])
+    await runner._applyMigration(pgp, migrations[0], "init", 1)
     const unappliedMiddle = await runner._getUnappliedMigrations()
     expect(unappliedMiddle).toEqual([migrations[1], migrations[2]])
 
-    await runner._applyMigration(pgp, migrations[1])
-    await runner._applyMigration(pgp, migrations[2])
+    await runner._applyMigration(pgp, migrations[1], "init", 1)
+    await runner._applyMigration(pgp, migrations[2], "init", 1)
     const unappliedAfter = await runner._getUnappliedMigrations()
     expect(unappliedAfter).toEqual([])
   })
@@ -198,7 +210,7 @@ describe("MigrationRunner", () => {
   })
 
   it("migrates all outstanding migrations", async () => {
-    await runner._applyMigration(pgp, migrations[0])
+    await runner._applyMigration(pgp, migrations[0], "init", 1)
     await massiveInstance.reload()
     expect(massiveInstance[schemaName].todo).toBeTruthy()
     expect(massiveInstance[schemaName].task).toBeFalsy()
@@ -219,11 +231,13 @@ describe("MigrationRunner", () => {
         schemaName,
         path.join(baseDir, "testHelpers/migration1.sql"),
       ),
+      "init",
+      1,
     )
     const error = new Error(
       "Mismatched migrations. Make sure migrations are in the same order that they have " +
       "been previously run.",
     )
-    await expect(runner.migrate(pgp)).rejects.toEqual(error)
+    await expect(runner.migrate("init", 1, pgp)).rejects.toEqual(error)
   })
 })
