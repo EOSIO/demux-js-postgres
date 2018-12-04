@@ -1924,10 +1924,10 @@ delegates@^1.0.0:
   resolved "https://registry.yarnpkg.com/delegates/-/delegates-1.0.0.tgz#84c6e159b81904fdca59a0ef44cd870d31250f9a"
   integrity sha1-hMbhWbgZBP3KWaDvRM2HDTElD5o=
 
-demux@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/demux/-/demux-2.0.0.tgz#a5060bb1aac614a498ebe5ea181e9aa65e533ec1"
-  integrity sha512-zFXuTuvsBkcdHJn22Uc5T0wXnMxTv/auIDjNndhzXm2MLIdnXquE49G5i2davNifNCh+/kMnrWdzT9bKkjksRg==
+demux@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/demux/-/demux-3.1.0.tgz#f5f03c450b33428d226f344f1b45aeafd3480821"
+  integrity sha512-u6LHZin03ltkHg7QyDxEErFqoRxfgTsgG9nLVsIQP0SVPCijQnKM4vc1psLfKYbjAadKDgb8Jzb+Ynh98dKwjg==
 
 detect-indent@5.0.0:
   version "5.0.0"
