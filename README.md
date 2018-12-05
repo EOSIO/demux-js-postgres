@@ -21,27 +21,24 @@ The MassiveActionHandler uses [massive-js](https://github.com/dmfay/massive-js) 
 ```javascript
 const { BaseActionWatcher } = require("demux")
 const { MassiveActionHandler } = require("demux-postgres")
+const { NodeosActionReader } = require("demux-eos") // Or any other compatible Action Reader
 
 const massive = require("massive")
 
-// See https://eosio.github.io/demux-js/ for info on Updaters and Effects
-const effects = require("./effects") // Import the effects you have written
-const updaters = require("./updaters") // Import the updaters you have written
+// See https://eosio.github.io/demux-js/ for info on Handler Versions, Updaters, and Effects
+const handlerVersions = require("./handlerVersions") // Import your handler versions
 
-const dbConfig = ... // see https://dmfay.github.io/massive-js/connecting.html for info on massive configuration
+// See https://dmfay.github.io/massive-js/connecting.html for info on massive configuration
+const dbConfig = { ... }
 
-massive(dbConfig).then(async (db) => {
-    const actionReader = ... // see https://github.com/EOSIO/demux-js-eos for a supported ActionReader
-    const actionHandler = new MassiveActionHandler(
-        updaters,
-        effects,
-        db,
-        dbConfig.schema
-    )
-    const actionWatcher = new BaseActionWatcher(actionReader, actionHander, 500)
-
-    actionWatcher.watch()
+massive(dbConfig).then((db) => {
+  const actionReader = new NodeosActionReader("http://my-node-endpoint", 0)
+  const actionHandler = new MassiveActionHandler(
+    handlerVersions,
+    db,
+    dbConfig.schema
+  )
+  const actionWatcher = new BaseActionWatcher(actionReader, actionHander, 500)
+  actionWatcher.watch()
 })
-
 ```
-
