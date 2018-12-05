@@ -29,12 +29,12 @@
     "typescript": "^2.9.2"
   },
   "dependencies": {
-    "demux": "^2.0.0",
+    "demux": "^3.1.0",
     "massive": "^5.2.0",
     "pg-promise": "8.4.6"
   },
   "peerDependencies": {
-    "demux": "^2.0.0"
+    "demux": "^3.1.0"
   },
   "scripts": {
     "release": "release-it",

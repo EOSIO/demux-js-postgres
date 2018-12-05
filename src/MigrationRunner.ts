@@ -8,11 +8,15 @@ export class MigrationRunner {
     protected pgp: IDatabase<{}>,
     protected migrations: Migration[],
     protected schemaName: string = "public",
+    skipSetup = false,
   ) {
     const migrationNames = migrations.map((f) => f.name)
     const nameDups = this.findDups(migrationNames)
     if (nameDups.length > 0) {
       throw Error(`Migrations named ${nameDups.join(", ")} are non-unique.`)
+    }
+    if (skipSetup) {
+      this.isSetUp = true
     }
   }
 
@@ -23,18 +27,23 @@ export class MigrationRunner {
     this.isSetUp = true
   }
 
-  public async migrate(pgp: IDatabase<{}> = this.pgp) {
+  public async migrate(
+    sequenceName: string = "default",
+    blockNumber: number = 0,
+    pgp: IDatabase<{}> = this.pgp,
+    initial: boolean = false,
+  ) {
     await this.throwIfNotSetup()
-    const unapplied = await this.getUnappliedMigrations()
+    const unapplied = await this.getUnappliedMigrations(initial)
     for (const migration of unapplied) {
-      await this.applyMigration(pgp, migration)
+      await this.applyMigration(pgp, migration, sequenceName, blockNumber)
     }
   }
 
-  protected async applyMigration(pgp: IDatabase<{}>, migration: Migration) {
+  protected async applyMigration(pgp: IDatabase<{}>, migration: Migration, sequenceName: string, blockNumber: number) {
     await migration.up(pgp)
     await this.refreshCyanAudit()
-    await this.registerMigration(pgp, migration.name)
+    await this.registerMigration(pgp, migration.name, sequenceName, blockNumber)
   }
 
   // public async revertTo(migrationName) {} // Down migrations
@@ -42,24 +51,27 @@ export class MigrationRunner {
   protected async checkOrCreateTables() {
     await this.pgp.none(`
       CREATE TABLE IF NOT EXISTS $1:raw._migration(
-        id serial PRIMARY KEY,
-        name TEXT
+        id           serial  PRIMARY KEY,
+        name         text,
+        sequence     text,
+        block_number integer
       );
     `, [this.schemaName])
 
     await this.pgp.none(`
       CREATE TABLE IF NOT EXISTS $1:raw._index_state (
-        id serial PRIMARY KEY,
-        block_number integer NOT NULL,
-        block_hash text NOT NULL,
-        is_replay boolean NOT NULL
+        id                   serial  PRIMARY KEY,
+        block_number         integer NOT NULL,
+        block_hash           text    NOT NULL,
+        is_replay            boolean NOT NULL,
+        handler_version_name text    DEFAULT 'v1'
       );
     `, [this.schemaName])
 
     await this.pgp.none(`
       CREATE TABLE IF NOT EXISTS $1:raw._block_number_txid (
         block_number integer PRIMARY KEY,
-        txid bigint NOT NULL
+        txid         bigint  NOT NULL
       );
     `, [this.schemaName])
   }
@@ -83,15 +95,20 @@ export class MigrationRunner {
     )
   }
 
-  protected async registerMigration(pgp: IDatabase<{}>, migrationName: string) {
+  protected async registerMigration(
+    pgp: IDatabase<{}>,
+    migrationName: string,
+    sequenceName: string,
+    blockNumber: number,
+  ) {
     await pgp.none(`
-      INSERT INTO $1:raw._migration (name) VALUES ($2);
-    `, [this.schemaName, migrationName])
+      INSERT INTO $1:raw._migration (name, sequence, block_number) VALUES ($2, $3, $4);
+    `, [this.schemaName, migrationName, sequenceName, blockNumber])
   }
 
-  protected async getUnappliedMigrations(): Promise<Migration[]> {
+  protected async getUnappliedMigrations(initial: boolean = false): Promise<Migration[]> {
     const migrationHistory = await this.getMigrationHistory()
-    await this.validateMigrationHistory(migrationHistory)
+    await this.validateMigrationHistory(migrationHistory, initial)
     return this.migrations.slice(migrationHistory.length)
   }
 
@@ -102,10 +119,12 @@ export class MigrationRunner {
     return migrationRows.map((row) => row.name)
   }
 
-  private validateMigrationHistory(migrationHistory: string[]) {
+  private validateMigrationHistory(migrationHistory: string[], initial: boolean = false) {
     // Make sure that the migrations in this.migrations match to the migration history
     for (let i = 0; i < migrationHistory.length; i++) {
-      if (i === migrationHistory.length) {
+      if (i === migrationHistory.length && initial) {
+        break
+      } else if (i === migrationHistory.length) {
         // tslint:disable-next-line
         throw new Error(
           "There are more migrations applied to the database than there are present on this " +
