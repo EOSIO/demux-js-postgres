@@ -149,6 +149,13 @@
   resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-0.7.0.tgz#9a06f4f137ee84d7df0460c1fdb1135ffa6c50fd"
   integrity sha512-ONhaKPIufzzrlNbqtWFFd+jlnemX6lJAgq9ZeiZtS7I1PIf/la7CW4m83rTXRnVnsMbW2k56pGYu7AUFJD9Pow==
 
+"@types/bunyan@^1.8.5":
+  version "1.8.5"
+  resolved "https://registry.yarnpkg.com/@types/bunyan/-/bunyan-1.8.5.tgz#d992adbce8ed20cde634764bd8f269f29f703647"
+  integrity sha512-7n8ANtxh2c5A/NfCuv8cVtWcgSLdq76MQbtmbInpzXuPw4TSAReUJ+MGHK4m67I4zI3ynCJoABfaeHYJaYSeRg==
+  dependencies:
+    "@types/node" "*"
+
 "@types/caseless@*":
   version "0.12.1"
   resolved "https://registry.yarnpkg.com/@types/caseless/-/caseless-0.12.1.tgz#9794c69c8385d0192acc471a540d1f8e0d16218a"
@@ -1934,10 +1941,10 @@ delegates@^1.0.0:
   resolved "https://registry.yarnpkg.com/delegates/-/delegates-1.0.0.tgz#84c6e159b81904fdca59a0ef44cd870d31250f9a"
   integrity sha1-hMbhWbgZBP3KWaDvRM2HDTElD5o=
 
-demux@^3.1.2:
-  version "3.1.2"
-  resolved "https://registry.yarnpkg.com/demux/-/demux-3.1.2.tgz#7447acfabf73a3f01f73414f6a3c4e915781eefb"
-  integrity sha512-ZBdE3lQeiDBdkVX9xUhPbi6jemVXhKua3ZE8si9Zzs7wrfyTzSVKpwlV3Q1gZgnuHJ6olFHVKrZe2s8iW/LrZA==
+demux@^3.1.3:
+  version "3.1.3"
+  resolved "https://registry.yarnpkg.com/demux/-/demux-3.1.3.tgz#b72665ae469c309722d17e3ef5bb988018e712e2"
+  integrity sha512-hbillSK87rDhpN3A0ZRnw5vo2d1HnG1BbS/ud7W+dMsGSGbRKbg9gutpfPTqTQQrcqX4sNfLnWIpOTVfs808mw==
   dependencies:
     bunyan "^1.8.12"
 
