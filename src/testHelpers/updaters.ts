@@ -22,14 +22,14 @@ async function updateTask(db: any, payload: any) {
 export default [
   {
     actionType: "add_todo",
-    updater: addTodo,
+    apply: addTodo,
   },
   {
     actionType: "add_tasks",
-    updater: addTasks,
+    apply: addTasks,
   },
   {
     actionType: "update_task",
-    updater: updateTask,
+    apply: updateTask,
   },
 ]

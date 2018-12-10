@@ -2,7 +2,6 @@ import Docker from "dockerode"
 import massive from "massive"
 import * as path from "path"
 import { Migration } from "./Migration"
-import { MigrationRunner } from "./MigrationRunner"
 import blockchains from "./testHelpers/blockchains"
 import * as dockerUtils from "./testHelpers/docker"
 import { JsonActionReader } from "./testHelpers/JsonActionReader"
@@ -21,7 +20,6 @@ jest.setTimeout(30000)
 const baseDir = path.join(path.resolve("./"), "src")
 
 describe("TestMassiveActionHandler", () => {
-  let runner: MigrationRunner
   let migrations: Migration[]
   let actionReader: JsonActionReader
   let actionHandler: TestMassiveActionHandler
@@ -39,13 +37,13 @@ describe("TestMassiveActionHandler", () => {
       dbName,
       dbUser,
       dbPass,
-      5432,
+      6457,
     )
     massiveInstance = await massive({
       database: dbName,
       user: dbUser,
       password: dbPass,
-      port: 5432,
+      port: 6457,
     })
     done()
   })
@@ -56,17 +54,24 @@ describe("TestMassiveActionHandler", () => {
       new Migration("createTodoTable", schemaName, path.join(baseDir, "testHelpers/migration1.sql")),
       new Migration("createTaskTable", schemaName, path.join(baseDir, "testHelpers/migration2.sql")),
     ]
-    runner = new MigrationRunner(
-      massiveInstance.instance,
+    const migrationSequence = {
       migrations,
+      sequenceName: "init",
+    }
+    actionReader = new JsonActionReader(blockchains.blockchain)
+    actionHandler = new TestMassiveActionHandler(
+      [{
+        versionName: "v1",
+        updaters,
+        effects: [],
+      }],
+      massiveInstance,
       schemaName,
+      [migrationSequence],
     )
-    await runner.setup()
-    await runner.migrate()
+    await actionHandler.setupDatabase()
     await massiveInstance.reload()
     db = massiveInstance[schemaName]
-    actionReader = new JsonActionReader(blockchains.blockchain)
-    actionHandler = new TestMassiveActionHandler(updaters, [], massiveInstance, schemaName)
   })
 
   afterEach(async () => {
