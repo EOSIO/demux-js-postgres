@@ -44,7 +44,8 @@
     "watch": "tsc -w",
     "lint": "tslint -c tslint.json src/**/*.ts",
     "test": "PGPASSWORD=docker jest",
-    "build-docs": "./build-docs.sh"
+    "build-docs": "./build-docs.sh",
+    "current-version": "echo $npm_package_version"
   },
   "jest": {
     "moduleFileExtensions": [
