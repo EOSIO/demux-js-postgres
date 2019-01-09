@@ -3,22 +3,22 @@ export default {
     {
       blockInfo: {
         blockNumber: 1,
-        blockHash: "0000000000000000000000000000000000000000000000000000000000000000",
-        previousBlockHash: "0000000000000000000000000000000000000000000000000000000000000000",
-        timestamp: new Date("2018-06-06T11:53:37.000"),
+        blockHash: '0000000000000000000000000000000000000000000000000000000000000000',
+        previousBlockHash: '0000000000000000000000000000000000000000000000000000000000000000',
+        timestamp: new Date('2018-06-06T11:53:37.000'),
       },
       actions: [
         {
-          type: "add_todo",
+          type: 'add_todo',
           payload: {
-            todoName: "Groceries",
+            todoName: 'Groceries',
             id: 1,
           },
         },
         {
-          type: "add_todo",
+          type: 'add_todo',
           payload: {
-            todoName: "Places to Visit",
+            todoName: 'Places to Visit',
             id: 2,
           },
         },
@@ -27,33 +27,33 @@ export default {
     {
       blockInfo: {
         blockNumber: 2,
-        blockHash: "0000000000000000000000000000000000000000000000000000000000000001",
-        previousBlockHash: "0000000000000000000000000000000000000000000000000000000000000000",
-        timestamp: new Date("2018-06-06T11:53:37.500"),
+        blockHash: '0000000000000000000000000000000000000000000000000000000000000001',
+        previousBlockHash: '0000000000000000000000000000000000000000000000000000000000000000',
+        timestamp: new Date('2018-06-06T11:53:37.500'),
       },
       actions: [
         {
-          type: "add_tasks",
+          type: 'add_tasks',
           payload: {
             todoId: 1,
             tasks: [
-              "apples",
-              "bananas",
-              "pears",
-              "milk",
-              "cookies",
+              'apples',
+              'bananas',
+              'pears',
+              'milk',
+              'cookies',
             ],
           },
         },
         {
-          type: "add_tasks",
+          type: 'add_tasks',
           payload: {
             todoId: 2,
             tasks: [
-              "Hong Kong",
-              "Sydney",
-              "London",
-              "San Francisco",
+              'Hong Kong',
+              'Sydney',
+              'London',
+              'San Francisco',
             ],
           },
         },
@@ -62,32 +62,32 @@ export default {
     {
       blockInfo: {
         blockNumber: 3,
-        blockHash: "0000000000000000000000000000000000000000000000000000000000000002",
-        previousBlockHash: "0000000000000000000000000000000000000000000000000000000000000001",
-        timestamp: new Date("2018-06-06T11:53:38.000"),
+        blockHash: '0000000000000000000000000000000000000000000000000000000000000002',
+        previousBlockHash: '0000000000000000000000000000000000000000000000000000000000000001',
+        timestamp: new Date('2018-06-06T11:53:38.000'),
       },
       actions: [
         {
-          type: "update_task",
+          type: 'update_task',
           payload: {
             todoId: 1,
-            taskName: "milk",
+            taskName: 'milk',
             completed: true,
           },
         },
         {
-          type: "update_task",
+          type: 'update_task',
           payload: {
             todoId: 1,
-            taskName: "cookies",
+            taskName: 'cookies',
             completed: true,
           },
         },
         {
-          type: "update_task",
+          type: 'update_task',
           payload: {
             todoId: 2,
-            taskName: "Hong Kong",
+            taskName: 'Hong Kong',
             completed: true,
           },
         },
@@ -98,22 +98,22 @@ export default {
     {
       blockInfo: {
         blockNumber: 1,
-        blockHash: "0000000000000000000000000000000000000000000000000000000000000000",
-        previousBlockHash: "0000000000000000000000000000000000000000000000000000000000000000",
-        timestamp: new Date("2018-06-06T11:53:37.000"),
+        blockHash: '0000000000000000000000000000000000000000000000000000000000000000',
+        previousBlockHash: '0000000000000000000000000000000000000000000000000000000000000000',
+        timestamp: new Date('2018-06-06T11:53:37.000'),
       },
       actions: [
         {
-          type: "add_todo",
+          type: 'add_todo',
           payload: {
-            todoName: "Groceries",
+            todoName: 'Groceries',
             id: 1,
           },
         },
         {
-          type: "add_todo",
+          type: 'add_todo',
           payload: {
-            todoName: "Places to Visit",
+            todoName: 'Places to Visit',
             id: 2,
           },
         },
@@ -122,34 +122,34 @@ export default {
     {
       blockInfo: {
         blockNumber: 2,
-        blockHash: "F000000000000000000000000000000000000000000000000000000000000001",
-        previousBlockHash: "0000000000000000000000000000000000000000000000000000000000000000",
-        timestamp: new Date("2018-06-06T11:53:37.500"),
+        blockHash: 'F000000000000000000000000000000000000000000000000000000000000001',
+        previousBlockHash: '0000000000000000000000000000000000000000000000000000000000000000',
+        timestamp: new Date('2018-06-06T11:53:37.500'),
       },
       actions: [
         {
-          type: "add_tasks",
+          type: 'add_tasks',
           payload: {
             todoId: 1,
             tasks: [
-              "apples",
-              "bananas",
-              "pears",
-              "milk",
-              "cookies",
-              "Forked blockchain",
+              'apples',
+              'bananas',
+              'pears',
+              'milk',
+              'cookies',
+              'Forked blockchain',
             ],
           },
         },
         {
-          type: "add_tasks",
+          type: 'add_tasks',
           payload: {
             todoId: 2,
             tasks: [
-              "Hong Kong",
-              "Sydney",
-              "London",
-              "San Francisco",
+              'Hong Kong',
+              'Sydney',
+              'London',
+              'San Francisco',
             ],
           },
         },
@@ -158,24 +158,24 @@ export default {
     {
       blockInfo: {
         blockNumber: 3,
-        blockHash: "F000000000000000000000000000000000000000000000000000000000000002",
-        previousBlockHash: "F000000000000000000000000000000000000000000000000000000000000001",
-        timestamp: new Date("2018-06-06T11:53:38.000"),
+        blockHash: 'F000000000000000000000000000000000000000000000000000000000000002',
+        previousBlockHash: 'F000000000000000000000000000000000000000000000000000000000000001',
+        timestamp: new Date('2018-06-06T11:53:38.000'),
       },
       actions: [
         {
-          type: "update_task",
+          type: 'update_task',
           payload: {
             todoId: 1,
-            taskName: "milk",
+            taskName: 'milk',
             completed: true,
           },
         },
         {
-          type: "update_task",
+          type: 'update_task',
           payload: {
             todoId: 1,
-            taskName: "cookies",
+            taskName: 'cookies',
             completed: true,
           },
         },
@@ -185,16 +185,16 @@ export default {
     {
       blockInfo: {
         blockNumber: 4,
-        blockHash: "F000000000000000000000000000000000000000000000000000000000000003",
-        previousBlockHash: "F000000000000000000000000000000000000000000000000000000000000002",
-        timestamp: new Date("2018-06-06T11:53:39.000"),
+        blockHash: 'F000000000000000000000000000000000000000000000000000000000000003',
+        previousBlockHash: 'F000000000000000000000000000000000000000000000000000000000000002',
+        timestamp: new Date('2018-06-06T11:53:39.000'),
       },
       actions: [
         {
-          type: "update_task",
+          type: 'update_task',
           payload: {
             todoId: 1,
-            taskName: "Forked blockchain",
+            taskName: 'Forked blockchain',
             completed: true,
           },
         },

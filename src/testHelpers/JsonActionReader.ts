@@ -1,4 +1,4 @@
-import { AbstractActionReader, Block } from "demux"
+import { AbstractActionReader, Block } from 'demux'
 
 /**
  * Reads from an array of `Block` objects, useful for testing.

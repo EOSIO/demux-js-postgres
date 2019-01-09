@@ -21,15 +21,15 @@ async function updateTask(db: any, payload: any) {
 
 export default [
   {
-    actionType: "add_todo",
+    actionType: 'add_todo',
     apply: addTodo,
   },
   {
-    actionType: "add_tasks",
+    actionType: 'add_tasks',
     apply: addTasks,
   },
   {
-    actionType: "update_task",
+    actionType: 'update_task',
     apply: updateTask,
   },
 ]
