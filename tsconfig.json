@@ -17,8 +17,6 @@
     "esModuleInterop": true
   },
   "exclude": [
-    "dist",
-    "**/*.test.ts",
-    "**/testHelpers"
+    "dist"
   ]
 }

@@ -1,4 +1,4 @@
-import { IDatabase, QueryFile } from "pg-promise"
+import { IDatabase, QueryFile } from 'pg-promise'
 
 export class Migration {
   protected upQueryFile: QueryFile
@@ -21,7 +21,7 @@ export class Migration {
 
   public async down(pgp: IDatabase<{}>) {
     if (!this.downQueryFile) {
-      throw Error("This migration has no down query!")
+      throw Error('This migration has no down query!')
     }
     await pgp.none(this.downQueryFile)
   }

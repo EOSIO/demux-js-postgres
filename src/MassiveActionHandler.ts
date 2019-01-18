@@ -1,8 +1,8 @@
-import { AbstractActionHandler, Block, HandlerVersion, IndexState } from "demux"
-import { IDatabase } from "pg-promise"
-import { MigrationSequence } from "./interfaces"
-import { Migration } from "./Migration"
-import { MigrationRunner } from "./MigrationRunner"
+import { AbstractActionHandler, Block, HandlerVersion, IndexState } from 'demux'
+import { IDatabase } from 'pg-promise'
+import { MigrationSequence } from './interfaces'
+import { Migration } from './Migration'
+import { MigrationRunner } from './MigrationRunner'
 
 /**
  * Connects to a Postgres database using [MassiveJS](https://github.com/dmfay/massive-js). Make sure to call
@@ -28,13 +28,13 @@ export class MassiveActionHandler extends AbstractActionHandler {
   constructor(
     protected handlerVersions: HandlerVersion[],
     protected massiveInstance: any,
-    protected dbSchema: string = "public",
+    protected dbSchema: string = 'public',
     protected migrationSequences: MigrationSequence[] = [],
   ) {
     super(handlerVersions)
     for (const migrationSequence of migrationSequences) {
       if (this.migrationSequenceByName.hasOwnProperty(migrationSequence.sequenceName)) {
-        throw new Error("Migration sequences must have unique names.")
+        throw new Error('Migration sequences must have unique names.')
       }
       this.migrationSequenceByName[migrationSequence.sequenceName] = migrationSequence
       for (const migration of migrationSequence.migrations) {
@@ -47,15 +47,15 @@ export class MassiveActionHandler extends AbstractActionHandler {
    * Sets up the database by idempotently creating the schema, installing CyanAudit, creates internally used tables, and
    * runs any initial migration sequences provided.
    */
-  public async setupDatabase(initSequenceName: string = "init") {
+  public async setupDatabase(initSequenceName: string = 'init') {
     const migrationRunner = new MigrationRunner(this.massiveInstance.instance, [], this.dbSchema)
     await migrationRunner.setup()
     await this.massiveInstance.reload()
     if (this.migrationSequenceByName[initSequenceName]) {
       await this.migrate(initSequenceName, this.massiveInstance.instance, true)
-    } else if (initSequenceName === "init") {
-      console.warn("No 'init' Migration sequence was provided, nor was a different initSequenceName. " +
-                   "No initial migrations have been run.")
+    } else if (initSequenceName === 'init') {
+      console.warn('No \'init\' Migration sequence was provided, nor was a different initSequenceName. ' +
+                   'No initial migrations have been run.')
     } else {
       throw new Error(`Migration sequence '${initSequenceName}' does not exist.`)
     }
@@ -92,7 +92,7 @@ export class MassiveActionHandler extends AbstractActionHandler {
   }
 
   protected get schemaInstance(): any {
-    if (this.dbSchema === "public") {
+    if (this.dbSchema === 'public') {
       return this.massiveInstance
     } else {
       return this.massiveInstance[this.dbSchema]
@@ -102,15 +102,15 @@ export class MassiveActionHandler extends AbstractActionHandler {
   protected async handleWithState(handle: (state: any, context?: any) => void): Promise<void> {
     await this.massiveInstance.withTransaction(async (tx: any) => {
       let db
-      if (this.dbSchema === "public") {
+      if (this.dbSchema === 'public') {
         db = tx
       } else {
         db = tx[this.dbSchema]
       }
-      this.warnOverwrite(db, "migrate")
+      this.warnOverwrite(db, 'migrate')
       db.migrate = async (sequenceName: string) => await this.migrate(sequenceName, tx.instance)
-      this.warnOverwrite(db, "txid")
-      db.txid = (await tx.instance.one("select txid_current()")).txid_current
+      this.warnOverwrite(db, 'txid')
+      db.txid = (await tx.instance.one('select txid_current()')).txid_current
       try {
         await handle(db)
       } catch (err) {
@@ -149,8 +149,8 @@ export class MassiveActionHandler extends AbstractActionHandler {
   protected async loadIndexState(): Promise<IndexState> {
     const defaultIndexState = {
       block_number: 0,
-      block_hash: "",
-      handler_version_name: "v1",
+      block_hash: '',
+      handler_version_name: 'v1',
       is_replay: false,
     }
     const indexState = await this.schemaInstance._index_state.findOne({ id: 1 }) || defaultIndexState
@@ -184,12 +184,12 @@ export class MassiveActionHandler extends AbstractActionHandler {
 
   protected async rollbackTo(blockNumber: number) {
     const blockNumberTxIds = await this.schemaInstance._block_number_txid.where(
-      "block_number > $1",
+      'block_number > $1',
       [blockNumber],
       {
         order: [{
-          field: "block_number",
-          direction: "desc",
+          field: 'block_number',
+          direction: 'desc',
         }],
       },
     )
@@ -203,7 +203,7 @@ export class MassiveActionHandler extends AbstractActionHandler {
   private warnOverwrite(db: any, toOverwrite: string): void {
     if (db.hasOwnProperty(toOverwrite)) {
       console.warn(`Assignment of '${toOverwrite}' on Massive object instance is overwriting property of the same ` +
-                   "name. Please use a different table or schema name.")
+                   'name. Please use a different table or schema name.')
     }
   }
 }
