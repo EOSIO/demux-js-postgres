@@ -1,5 +1,12 @@
 import * as path from 'path'
 import { IDatabase } from 'pg-promise'
+import {
+  ExtraMigrationHistoryError,
+  MismatchedMigrationsHistoryError,
+  MissingSchemaError,
+  MissingTableError,
+  NonUniqueMigrationNameError
+} from './errors'
 import { Migration } from './Migration'
 
 export class MigrationRunner {
@@ -13,7 +20,7 @@ export class MigrationRunner {
     const migrationNames = migrations.map((f) => f.name)
     const nameDups = this.findDups(migrationNames)
     if (nameDups.length > 0) {
-      throw Error(`Migrations named ${nameDups.join(', ')} are non-unique.`)
+      throw new NonUniqueMigrationNameError(nameDups)
     }
     if (skipSetup) {
       this.isSetUp = true
@@ -125,16 +132,10 @@ export class MigrationRunner {
       if (i === migrationHistory.length && initial) {
         break
       } else if (i === migrationHistory.length) {
-        // tslint:disable-next-line
-        throw new Error(
-          'There are more migrations applied to the database than there are present on this ' +
-          'system. Make sure you have not deleted any migrations and are running up-to-date code.')
+        throw new ExtraMigrationHistoryError()
       }
       if (migrationHistory[i] !== this.migrations[i].name) {
-        // tslint:disable-next-line
-        throw new Error(
-          'Mismatched migrations. Make sure migrations are in the same order that they have ' +
-          'been previously run.')
+        throw new MismatchedMigrationsHistoryError()
       }
     }
   }
@@ -157,7 +158,7 @@ export class MigrationRunner {
       [schema],
     )
     if (!exists) {
-      throw Error(`Schema '${schema}' does not exist. Make sure you have run \`setup()\` before migrating`)
+      throw new MissingSchemaError(schema)
     }
   }
 
@@ -173,7 +174,7 @@ export class MigrationRunner {
       [this.schemaName, table],
     )
     if (!exists) {
-      throw Error(`Table '${table}' does not exist. Make sure you have run \`setup()\` before migrating`)
+      throw new MissingTableError(table)
     }
   }
 

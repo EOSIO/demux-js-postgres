@@ -1,5 +1,6 @@
 import { AbstractActionHandler, Block, HandlerVersion, IndexState } from 'demux'
 import { IDatabase } from 'pg-promise'
+import { MismatchedMigrationsError, NonExistantMigrationError, NonUniqueMigrationSequenceError } from './errors'
 import { MigrationSequence } from './interfaces'
 import { Migration } from './Migration'
 import { MigrationRunner } from './MigrationRunner'
@@ -34,7 +35,7 @@ export class MassiveActionHandler extends AbstractActionHandler {
     super(handlerVersions)
     for (const migrationSequence of migrationSequences) {
       if (this.migrationSequenceByName.hasOwnProperty(migrationSequence.sequenceName)) {
-        throw new Error('Migration sequences must have unique names.')
+        throw new NonUniqueMigrationSequenceError()
       }
       this.migrationSequenceByName[migrationSequence.sequenceName] = migrationSequence
       for (const migration of migrationSequence.migrations) {
@@ -57,7 +58,7 @@ export class MassiveActionHandler extends AbstractActionHandler {
       console.warn('No \'init\' Migration sequence was provided, nor was a different initSequenceName. ' +
                    'No initial migrations have been run.')
     } else {
-      throw new Error(`Migration sequence '${initSequenceName}' does not exist.`)
+      throw new NonExistantMigrationError(initSequenceName)
     }
   }
 
@@ -74,7 +75,7 @@ export class MassiveActionHandler extends AbstractActionHandler {
   ) {
     const migrationSequence = this.migrationSequenceByName[sequenceName]
     if (!migrationSequence) {
-      throw new Error(`Migration sequence '${sequenceName}' does not exist.`)
+      throw new NonExistantMigrationError(sequenceName)
     }
     let ranMigrations: Migration[] = []
     if (!initial) {
@@ -173,9 +174,10 @@ export class MassiveActionHandler extends AbstractActionHandler {
     })
     const ranMigrations = []
     for (const [index, processedMigration] of processedMigrations.entries()) {
-      if (this.allMigrations[index].name !== processedMigration.name) {
-        throw new Error(`Migration '${this.allMigrations[index].name}' at index ${index} does not match ` +
-                        `corresponding migration in database; found '${processedMigration.name}' instead.`)
+      const expectedName = this.allMigrations[index].name
+      const actualName = processedMigration.name
+      if (expectedName !== actualName) {
+        throw new MismatchedMigrationsError(expectedName, actualName, index)
       }
       ranMigrations.push(this.allMigrations[index])
     }
