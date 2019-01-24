@@ -43,7 +43,7 @@
     "build": "tsc && cp -R src/cyanaudit dist",
     "compile": "tsc",
     "watch": "tsc -w",
-    "lint": "tslint -c tslint.json src/**/*.ts",
+    "lint": "tslint -c tslint.json -p tsconfig.json",
     "test": "PGPASSWORD=docker jest",
     "build-docs": "./build-docs.sh",
     "current-version": "echo $npm_package_version"

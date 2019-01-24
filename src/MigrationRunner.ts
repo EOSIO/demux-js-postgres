@@ -1,19 +1,19 @@
-import { IDatabase } from "pg-promise"
-import { Migration } from "./Migration"
-import * as path from "path"
+import * as path from 'path'
+import { IDatabase } from 'pg-promise'
+import { Migration } from './Migration'
 
 export class MigrationRunner {
   private isSetUp: boolean = false
   constructor(
     protected pgp: IDatabase<{}>,
     protected migrations: Migration[],
-    protected schemaName: string = "public",
+    protected schemaName: string = 'public',
     skipSetup = false,
   ) {
     const migrationNames = migrations.map((f) => f.name)
     const nameDups = this.findDups(migrationNames)
     if (nameDups.length > 0) {
-      throw Error(`Migrations named ${nameDups.join(", ")} are non-unique.`)
+      throw Error(`Migrations named ${nameDups.join(', ')} are non-unique.`)
     }
     if (skipSetup) {
       this.isSetUp = true
@@ -28,7 +28,7 @@ export class MigrationRunner {
   }
 
   public async migrate(
-    sequenceName: string = "default",
+    sequenceName: string = 'default',
     blockNumber: number = 0,
     pgp: IDatabase<{}> = this.pgp,
     initial: boolean = false,
@@ -83,14 +83,14 @@ export class MigrationRunner {
   }
 
   protected async installCyanAudit() {
-    const cyanaudit = new Migration("", "", path.join(__dirname, "cyanaudit/cyanaudit--2.2.0.sql"))
+    const cyanaudit = new Migration('', '', path.join(__dirname, 'cyanaudit/cyanaudit--2.2.0.sql'))
     await cyanaudit.up(this.pgp)
     await this.refreshCyanAudit()
   }
 
   protected async refreshCyanAudit(pgp: IDatabase<{}> = this.pgp) {
     await pgp.many(
-      "SELECT cyanaudit.fn_update_audit_fields($1)",
+      'SELECT cyanaudit.fn_update_audit_fields($1)',
       [this.schemaName],
     )
   }
@@ -127,14 +127,14 @@ export class MigrationRunner {
       } else if (i === migrationHistory.length) {
         // tslint:disable-next-line
         throw new Error(
-          "There are more migrations applied to the database than there are present on this " +
-          "system. Make sure you have not deleted any migrations and are running up-to-date code.")
+          'There are more migrations applied to the database than there are present on this ' +
+          'system. Make sure you have not deleted any migrations and are running up-to-date code.')
       }
       if (migrationHistory[i] !== this.migrations[i].name) {
         // tslint:disable-next-line
         throw new Error(
-          "Mismatched migrations. Make sure migrations are in the same order that they have " +
-          "been previously run.")
+          'Mismatched migrations. Make sure migrations are in the same order that they have ' +
+          'been previously run.')
       }
     }
   }
@@ -142,10 +142,10 @@ export class MigrationRunner {
   private async throwIfNotSetup() {
     if (!this.isSetUp) {
       await this.checkSchema(this.schemaName)
-      await this.checkTable("_migration")
-      await this.checkTable("_index_state")
-      await this.checkTable("_block_number_txid")
-      await this.checkSchema("cyanaudit")
+      await this.checkTable('_migration')
+      await this.checkTable('_index_state')
+      await this.checkTable('_block_number_txid')
+      await this.checkSchema('cyanaudit')
       this.isSetUp = true
     }
   }
