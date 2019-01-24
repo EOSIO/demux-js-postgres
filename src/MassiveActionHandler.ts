@@ -1,6 +1,6 @@
 import { AbstractActionHandler, Block, HandlerVersion, IndexState } from 'demux'
 import { IDatabase } from 'pg-promise'
-import { MismatchedMigrationsError, NonExistantMigrationError, NonUniqueMigrationSequenceError } from './errors'
+import { MismatchedMigrationsError, NonExistentMigrationError, NonUniqueMigrationSequenceError } from './errors'
 import { MigrationSequence } from './interfaces'
 import { Migration } from './Migration'
 import { MigrationRunner } from './MigrationRunner'
@@ -58,7 +58,7 @@ export class MassiveActionHandler extends AbstractActionHandler {
       console.warn('No \'init\' Migration sequence was provided, nor was a different initSequenceName. ' +
                    'No initial migrations have been run.')
     } else {
-      throw new NonExistantMigrationError(initSequenceName)
+      throw new NonExistentMigrationError(initSequenceName)
     }
   }
 
@@ -75,7 +75,7 @@ export class MassiveActionHandler extends AbstractActionHandler {
   ) {
     const migrationSequence = this.migrationSequenceByName[sequenceName]
     if (!migrationSequence) {
-      throw new NonExistantMigrationError(sequenceName)
+      throw new NonExistentMigrationError(sequenceName)
     }
     let ranMigrations: Migration[] = []
     if (!initial) {

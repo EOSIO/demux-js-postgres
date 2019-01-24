@@ -14,10 +14,10 @@ export class NonUniqueMigrationSequenceError extends Error {
   }
 }
 
-export class NonExistantMigrationError extends Error {
+export class NonExistentMigrationError extends Error {
   constructor(initSequenceName: string) {
     super(`Migration sequence '${initSequenceName}' does not exist.`)
-    Object.setPrototypeOf(this, NonExistantMigrationError.prototype)
+    Object.setPrototypeOf(this, NonExistentMigrationError.prototype)
   }
 }
 
