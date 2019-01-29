@@ -98,7 +98,7 @@ export class MassiveActionHandler extends AbstractActionHandler {
       await this.massiveInstance.reload()
       await this.migrate(initSequenceName, this.massiveInstance.instance, true)
     } catch (err) {
-      throw new NotInitializedError('Failed to migrate the postgres database.')
+      throw new NotInitializedError('Failed to migrate the postgres database.', err)
     }
   }
 
