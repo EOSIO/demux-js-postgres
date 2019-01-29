@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "@blockone/tslint-config-blockone": "^1.0.0",
-    "demux": "^3.1.4-dc2424d.0",
+    "demux": "^3.1.4-347caa4.0",
     "massive": "5.7.2",
     "pg-promise": "8.5.3"
   },
