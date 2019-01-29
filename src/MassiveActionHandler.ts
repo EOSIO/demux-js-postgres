@@ -1,4 +1,4 @@
-import { AbstractActionHandler, Block, HandlerVersion, IndexState } from 'demux'
+import { AbstractActionHandler, Block, HandlerVersion, IndexState, NotInitializedError } from 'demux'
 import { IDatabase } from 'pg-promise'
 import { MismatchedMigrationsError, NonExistentMigrationError, NonUniqueMigrationSequenceError } from './errors'
 import { MigrationSequence } from './interfaces'
@@ -45,24 +45,6 @@ export class MassiveActionHandler extends AbstractActionHandler {
   }
 
   /**
-   * Sets up the database by idempotently creating the schema, installing CyanAudit, creates internally used tables, and
-   * runs any initial migration sequences provided.
-   */
-  public async setupDatabase(initSequenceName: string = 'init') {
-    const migrationRunner = new MigrationRunner(this.massiveInstance.instance, [], this.dbSchema)
-    await migrationRunner.setup()
-    await this.massiveInstance.reload()
-    if (this.migrationSequenceByName[initSequenceName]) {
-      await this.migrate(initSequenceName, this.massiveInstance.instance, true)
-    } else if (initSequenceName === 'init') {
-      console.warn('No \'init\' Migration sequence was provided, nor was a different initSequenceName. ' +
-                   'No initial migrations have been run.')
-    } else {
-      throw new NonExistentMigrationError(initSequenceName)
-    }
-  }
-
-  /**
    * Migrates the database by the given sequenceName. There must be a `MigrationSequence` with this name, or this will
    * throw an error.
    *
@@ -72,7 +54,7 @@ export class MassiveActionHandler extends AbstractActionHandler {
     sequenceName: string,
     pgp: IDatabase<{}> = this.massiveInstance.instance,
     initial: boolean = false,
-  ) {
+  ): Promise<void> {
     const migrationSequence = this.migrationSequenceByName[sequenceName]
     if (!migrationSequence) {
       throw new NonExistentMigrationError(sequenceName)
@@ -90,6 +72,34 @@ export class MassiveActionHandler extends AbstractActionHandler {
       initial,
     )
     await this.massiveInstance.reload()
+  }
+
+  /**
+   * Sets up the database by idempotently creating the schema, installing CyanAudit, creates internally used tables, and
+   * runs any initial migration sequences provided.
+   */
+  protected async setup(initSequenceName: string = 'init'): Promise<void> {
+    if (this.initialized) {
+      return
+    }
+
+    if (!this.migrationSequenceByName[initSequenceName]) {
+      if (initSequenceName === 'init') {
+        console.warn(`No 'init' Migration sequence was provided, nor was a different initSequenceName.` +
+                     'No initial migrations have been run.')
+      } else {
+        throw new NonExistentMigrationError(initSequenceName)
+      }
+    }
+
+    try {
+      const migrationRunner = new MigrationRunner(this.massiveInstance.instance, [], this.dbSchema)
+      await migrationRunner.setup()
+      await this.massiveInstance.reload()
+      await this.migrate(initSequenceName, this.massiveInstance.instance, true)
+    } catch (err) {
+      throw new NotInitializedError('Failed to migrate the postgres database.')
+    }
   }
 
   protected get schemaInstance(): any {
@@ -129,7 +139,7 @@ export class MassiveActionHandler extends AbstractActionHandler {
     block: Block,
     isReplay: boolean,
     handlerVersionName: string,
-  ) {
+  ): Promise<void> {
     const { blockInfo } = block
     const fromDb = (await state._index_state.findOne({ id: 1 })) || {}
     const toSave = {
@@ -184,7 +194,7 @@ export class MassiveActionHandler extends AbstractActionHandler {
     return ranMigrations
   }
 
-  protected async rollbackTo(blockNumber: number) {
+  protected async rollbackTo(blockNumber: number): Promise<void> {
     const blockNumberTxIds = await this.schemaInstance._block_number_txid.where(
       'block_number > $1',
       [blockNumber],

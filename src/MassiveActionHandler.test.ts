@@ -69,7 +69,7 @@ describe('TestMassiveActionHandler', () => {
       schemaName,
       [migrationSequence],
     )
-    await actionHandler.setupDatabase()
+    await actionHandler.initialize()
     await massiveInstance.reload()
     db = massiveInstance[schemaName]
   })
@@ -87,8 +87,8 @@ describe('TestMassiveActionHandler', () => {
   })
 
   it('populates database correctly', async () => {
-    const [block1, isRollback] = await actionReader.nextBlock()
-    await actionHandler.handleBlock(block1, isRollback, actionReader.isFirstBlock)
+    const nextBlock = await actionReader.getNextBlock()
+    await actionHandler.handleBlock(nextBlock, false)
 
     const groceries = await db.todo.findOne({ id: 1 })
     expect(groceries).toEqual({
@@ -101,8 +101,8 @@ describe('TestMassiveActionHandler', () => {
       name: 'Places to Visit',
     })
 
-    const [block2, isNotRollback] = await actionReader.nextBlock()
-    await actionHandler.handleBlock(block2, isNotRollback, actionReader.isFirstBlock)
+    const nextBlock2 = await actionReader.getNextBlock()
+    await actionHandler.handleBlock(nextBlock2, false)
 
     const cookies = await db.task.findOne({ name: 'cookies' })
     expect(cookies).toEqual({
@@ -120,8 +120,8 @@ describe('TestMassiveActionHandler', () => {
       todo_id: 2,
     })
 
-    const [block3, alsoNotRollback] = await actionReader.nextBlock()
-    await actionHandler.handleBlock(block3, alsoNotRollback, actionReader.isFirstBlock)
+    const nextBlock3  = await actionReader.getNextBlock()
+    await actionHandler.handleBlock(nextBlock3, false)
 
     const milk = await db.task.findOne({ name: 'milk' })
     const dippedCookies = await db.task.findOne({ name: 'cookies' })
@@ -148,44 +148,43 @@ describe('TestMassiveActionHandler', () => {
   })
 
   it('returns a needToSeek block number if state already exists', async () => {
-    const [block1, isRollback1] = await actionReader.nextBlock()
-    await actionHandler.handleBlock(block1, isRollback1, actionReader.isFirstBlock)
-    expect(actionReader.isFirstBlock).toBe(true)
+    const nextBlock = await actionReader.getNextBlock()
+    await actionHandler.handleBlock(nextBlock, false)
+    expect(actionReader.currentBlockNumber).toBe(1)
 
-    const [block2, isRollback2] = await actionReader.nextBlock()
-    await actionHandler.handleBlock(block2, isRollback2, actionReader.isFirstBlock)
-    expect(actionReader.isFirstBlock).toBe(false)
+    const nextBlock2 = await actionReader.getNextBlock()
+    await actionHandler.handleBlock(nextBlock2, false)
+    expect(actionReader.currentBlockNumber).not.toBe(1)
 
     actionHandler.reset()
-    const [needToSeek, seekTo] = await actionHandler.handleBlock(block1, isRollback1, true)
-    expect(needToSeek).toBe(true)
-    expect(seekTo).toBe(3)
+    const nextBlockNeeded = await actionHandler.handleBlock(nextBlock, false)
+    expect(nextBlockNeeded).toBe(3)
   })
 
   it('rolls back when blockchain forks', async () => {
-    const [block1, isRollback1] = await actionReader.nextBlock()
-    await actionHandler.handleBlock(block1, isRollback1, actionReader.isFirstBlock)
-    const [block2, isRollback2] = await actionReader.nextBlock()
-    await actionHandler.handleBlock(block2, isRollback2, actionReader.isFirstBlock)
-    const [block3, isRollback3] = await actionReader.nextBlock()
-    await actionHandler.handleBlock(block3, isRollback3, actionReader.isFirstBlock)
+    const nextBlock = await actionReader.getNextBlock()
+    await actionHandler.handleBlock(nextBlock, false)
+    const nextBlock2 = await actionReader.getNextBlock()
+    await actionHandler.handleBlock(nextBlock2, false)
+    const nextBlock3 = await actionReader.getNextBlock()
+    await actionHandler.handleBlock(nextBlock3, false)
 
     actionReader.blockchain = blockchains.forked
-    const [forkBlock2, forkIsRollback2] = await actionReader.nextBlock()
-    expect(forkBlock2.blockInfo.blockNumber).toBe(2)
-    expect(forkIsRollback2).toBe(true)
+    const forkBlock2 = await actionReader.getNextBlock()
+    expect(forkBlock2.block.blockInfo.blockNumber).toBe(2)
+    expect(forkBlock2.blockMeta.isRollback).toBe(true)
 
-    await actionHandler.handleBlock(forkBlock2, forkIsRollback2, actionReader.isFirstBlock)
+    await actionHandler.handleBlock(forkBlock2, false)
     const forkedTask = db.task.findOne({ name: 'Forked blockchain' })
     expect(forkedTask).toBeTruthy()
 
-    const [forkBlock3, forkIsRollback3] = await actionReader.nextBlock()
-    await actionHandler.handleBlock(forkBlock3, forkIsRollback3, actionReader.isFirstBlock)
+    const forkBlock3 = await actionReader.getNextBlock()
+    await actionHandler.handleBlock(forkBlock3, false)
     const hongKong = await db.task.findOne({ name: 'Hong Kong' })
     expect(hongKong.completed).toBe(false)
 
-    const [forkBlock4, forkIsRollback4] = await actionReader.nextBlock()
-    await actionHandler.handleBlock(forkBlock4, forkIsRollback4, actionReader.isFirstBlock)
+    const forkBlock4 = await actionReader.getNextBlock()
+    await actionHandler.handleBlock(forkBlock4, false)
     const forkedTaskComplete = await db.task.findOne({ name: 'Forked blockchain' })
     expect(forkedTaskComplete.completed).toBe(true)
   })

@@ -10,7 +10,7 @@ export class JsonActionReader extends AbstractActionReader {
     protected onlyIrreversible: boolean = false,
     protected maxHistoryLength: number = 600,
   ) {
-    super(startAtBlock, onlyIrreversible, maxHistoryLength)
+    super({startAtBlock, onlyIrreversible, maxHistoryLength})
   }
 
   public async getHeadBlockNumber(): Promise<number> {
@@ -34,6 +34,10 @@ export class JsonActionReader extends AbstractActionReader {
   }
 
   public async getLastIrreversibleBlockNumber(): Promise<number> {
-    return this.getHeadBlockNumber()
+    return this.lastIrreversibleBlockNumber
+  }
+
+  protected setup(): Promise<void> {
+    return new Promise<void>((resolve) => resolve())
   }
 }
