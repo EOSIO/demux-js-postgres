@@ -907,6 +907,9 @@ img { max-width: 100%; }
 </header>
 <nav class="tsd-navigation secondary">
 	<ul>
+		<li class=" tsd-kind-class">
+			<a href="extramigrationhistoryerror.html" class="tsd-kind-icon">Extra<wbr>Migration<wbr>History<wbr>Error</a>
+		</li>
 		<li class="current tsd-kind-class">
 			<a href="massiveactionhandler.html" class="tsd-kind-icon">Massive<wbr>Action<wbr>Handler</a>
 			<ul>
@@ -919,17 +922,26 @@ img { max-width: 100%; }
 				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
 					<a href="massiveactionhandler.html#dbschema" class="tsd-kind-icon">db<wbr>Schema</a>
 				</li>
-				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 					<a href="massiveactionhandler.html#handlerversionname" class="tsd-kind-icon">handler<wbr>Version<wbr>Name</a>
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
 					<a href="massiveactionhandler.html#handlerversions" class="tsd-kind-icon">handler<wbr>Versions</a>
 				</li>
-				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
-					<a href="massiveactionhandler.html#lastprocessedblockhash" class="tsd-kind-icon">last<wbr>Processed<wbr>Block<wbr>Hash</a>
+				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
+					<a href="massiveactionhandler.html#info" class="tsd-kind-icon">info</a>
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+					<a href="massiveactionhandler.html#initialized" class="tsd-kind-icon">initialized</a>
+				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
+					<a href="massiveactionhandler.html#lastprocessedblockhash" class="tsd-kind-icon">last<wbr>Processed<wbr>Block<wbr>Hash</a>
+				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 					<a href="massiveactionhandler.html#lastprocessedblocknumber" class="tsd-kind-icon">last<wbr>Processed<wbr>Block<wbr>Number</a>
+				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+					<a href="massiveactionhandler.html#log" class="tsd-kind-icon">log</a>
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
 					<a href="massiveactionhandler.html#massiveinstance" class="tsd-kind-icon">massive<wbr>Instance</a>
@@ -955,11 +967,17 @@ img { max-width: 100%; }
 				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected">
 					<a href="massiveactionhandler.html#handlewithstate" class="tsd-kind-icon">handle<wbr>With<wbr>State</a>
 				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a href="massiveactionhandler.html#initialize" class="tsd-kind-icon">initialize</a>
+				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected">
 					<a href="massiveactionhandler.html#loadindexstate" class="tsd-kind-icon">load<wbr>Index<wbr>State</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
 					<a href="massiveactionhandler.html#loadranmigrations" class="tsd-kind-icon">load<wbr>Ran<wbr>Migrations</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+					<a href="massiveactionhandler.html#matchactiontype" class="tsd-kind-icon">match<wbr>Action<wbr>Type</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
 					<a href="massiveactionhandler.html#migrate" class="tsd-kind-icon">migrate</a>
@@ -970,8 +988,8 @@ img { max-width: 100%; }
 				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
 					<a href="massiveactionhandler.html#runeffects" class="tsd-kind-icon">run<wbr>Effects</a>
 				</li>
-				<li class=" tsd-kind-method tsd-parent-kind-class">
-					<a href="massiveactionhandler.html#setupdatabase" class="tsd-kind-icon">setup<wbr>Database</a>
+				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected">
+					<a href="massiveactionhandler.html#setup" class="tsd-kind-icon">setup</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected">
 					<a href="massiveactionhandler.html#updateindexstate" class="tsd-kind-icon">update<wbr>Index<wbr>State</a>
@@ -986,6 +1004,30 @@ img { max-width: 100%; }
 		</li>
 		<li class=" tsd-kind-class">
 			<a href="migrationrunner.html" class="tsd-kind-icon">Migration<wbr>Runner</a>
+		</li>
+		<li class=" tsd-kind-class">
+			<a href="mismatchedmigrationserror.html" class="tsd-kind-icon">Mismatched<wbr>Migrations<wbr>Error</a>
+		</li>
+		<li class=" tsd-kind-class">
+			<a href="mismatchedmigrationshistoryerror.html" class="tsd-kind-icon">Mismatched<wbr>Migrations<wbr>History<wbr>Error</a>
+		</li>
+		<li class=" tsd-kind-class">
+			<a href="missingdownqueryerror.html" class="tsd-kind-icon">Missing<wbr>Down<wbr>Query<wbr>Error</a>
+		</li>
+		<li class=" tsd-kind-class">
+			<a href="missingschemaerror.html" class="tsd-kind-icon">Missing<wbr>Schema<wbr>Error</a>
+		</li>
+		<li class=" tsd-kind-class">
+			<a href="missingtableerror.html" class="tsd-kind-icon">Missing<wbr>Table<wbr>Error</a>
+		</li>
+		<li class=" tsd-kind-class">
+			<a href="nonexistentmigrationerror.html" class="tsd-kind-icon">Non<wbr>Existent<wbr>Migration<wbr>Error</a>
+		</li>
+		<li class=" tsd-kind-class">
+			<a href="nonuniquemigrationnameerror.html" class="tsd-kind-icon">Non<wbr>Unique<wbr>Migration<wbr>Name<wbr>Error</a>
+		</li>
+		<li class=" tsd-kind-class">
+			<a href="nonuniquemigrationsequenceerror.html" class="tsd-kind-icon">Non<wbr>Unique<wbr>Migration<wbr>Sequence<wbr>Error</a>
 		</li>
 		<li class=" tsd-kind-interface">
 			<a href="../interfaces/migrationsequence.html" class="tsd-kind-icon">Migration<wbr>Sequence</a>
@@ -1044,15 +1086,18 @@ img { max-width: 100%; }
 							<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite"><a href="massiveactionhandler.html#constructor" class="tsd-kind-icon">constructor</a></li>
 						</ul>
 					</section>
-					<section class="tsd-index-section tsd-is-private-protected">
+					<section class="tsd-index-section ">
 						<h3>Properties</h3>
 						<ul class="tsd-index-list">
 							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="massiveactionhandler.html#allmigrations" class="tsd-kind-icon">all<wbr>Migrations</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="massiveactionhandler.html#dbschema" class="tsd-kind-icon">db<wbr>Schema</a></li>
-							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="massiveactionhandler.html#handlerversionname" class="tsd-kind-icon">handler<wbr>Version<wbr>Name</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="massiveactionhandler.html#handlerversionname" class="tsd-kind-icon">handler<wbr>Version<wbr>Name</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="massiveactionhandler.html#handlerversions" class="tsd-kind-icon">handler<wbr>Versions</a></li>
-							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="massiveactionhandler.html#lastprocessedblockhash" class="tsd-kind-icon">last<wbr>Processed<wbr>Block<wbr>Hash</a></li>
-							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="massiveactionhandler.html#lastprocessedblocknumber" class="tsd-kind-icon">last<wbr>Processed<wbr>Block<wbr>Number</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="massiveactionhandler.html#info" class="tsd-kind-icon">info</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="massiveactionhandler.html#initialized" class="tsd-kind-icon">initialized</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="massiveactionhandler.html#lastprocessedblockhash" class="tsd-kind-icon">last<wbr>Processed<wbr>Block<wbr>Hash</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="massiveactionhandler.html#lastprocessedblocknumber" class="tsd-kind-icon">last<wbr>Processed<wbr>Block<wbr>Number</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="massiveactionhandler.html#log" class="tsd-kind-icon">log</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="massiveactionhandler.html#massiveinstance" class="tsd-kind-icon">massive<wbr>Instance</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="massiveactionhandler.html#migrationsequencebyname" class="tsd-kind-icon">migration<wbr>Sequence<wbr>ByName</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="massiveactionhandler.html#migrationsequences" class="tsd-kind-icon">migration<wbr>Sequences</a></li>
@@ -1071,12 +1116,14 @@ img { max-width: 100%; }
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="massiveactionhandler.html#handleactions" class="tsd-kind-icon">handle<wbr>Actions</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="massiveactionhandler.html#handleblock" class="tsd-kind-icon">handle<wbr>Block</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected"><a href="massiveactionhandler.html#handlewithstate" class="tsd-kind-icon">handle<wbr>With<wbr>State</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="massiveactionhandler.html#initialize" class="tsd-kind-icon">initialize</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected"><a href="massiveactionhandler.html#loadindexstate" class="tsd-kind-icon">load<wbr>Index<wbr>State</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="massiveactionhandler.html#loadranmigrations" class="tsd-kind-icon">load<wbr>Ran<wbr>Migrations</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="massiveactionhandler.html#matchactiontype" class="tsd-kind-icon">match<wbr>Action<wbr>Type</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="massiveactionhandler.html#migrate" class="tsd-kind-icon">migrate</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected"><a href="massiveactionhandler.html#rollbackto" class="tsd-kind-icon">rollback<wbr>To</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="massiveactionhandler.html#runeffects" class="tsd-kind-icon">run<wbr>Effects</a></li>
-							<li class="tsd-kind-method tsd-parent-kind-class"><a href="massiveactionhandler.html#setupdatabase" class="tsd-kind-icon">setup<wbr>Database</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected"><a href="massiveactionhandler.html#setup" class="tsd-kind-icon">setup</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected"><a href="massiveactionhandler.html#updateindexstate" class="tsd-kind-icon">update<wbr>Index<wbr>State</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="massiveactionhandler.html#warnoverwrite" class="tsd-kind-icon">warn<wbr>Overwrite</a></li>
 						</ul>
@@ -1097,7 +1144,7 @@ img { max-width: 100%; }
 						<aside class="tsd-sources">
 							<p>Overrides AbstractActionHandler.__constructor</p>
 							<ul>
-								<li>Defined in <a href="https://github.com/EOSIO/demux-js-postgres/blob/e4afc93/src/MassiveActionHandler.ts#L26">src/MassiveActionHandler.ts:26</a></li>
+								<li>Defined in <a href="https://github.com/EOSIO/demux-js-postgres/blob/ff5a7b8/src/MassiveActionHandler.ts#L27">src/MassiveActionHandler.ts:27</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1120,7 +1167,7 @@ img { max-width: 100%; }
 				</ul>
 			</section>
 		</section>
-		<section class="tsd-panel-group tsd-member-group tsd-is-private-protected">
+		<section class="tsd-panel-group tsd-member-group ">
 			<h2>Properties</h2>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
 				<a name="allmigrations" class="tsd-anchor"></a>
@@ -1128,7 +1175,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">all<wbr>Migrations<span class="tsd-signature-symbol">:</span> <a href="migration.html" class="tsd-signature-type">Migration</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[]</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/EOSIO/demux-js-postgres/blob/e4afc93/src/MassiveActionHandler.ts#L25">src/MassiveActionHandler.ts:25</a></li>
+						<li>Defined in <a href="https://github.com/EOSIO/demux-js-postgres/blob/ff5a7b8/src/MassiveActionHandler.ts#L26">src/MassiveActionHandler.ts:26</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1138,18 +1185,18 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">db<wbr>Schema<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/EOSIO/demux-js-postgres/blob/e4afc93/src/MassiveActionHandler.ts#L31">src/MassiveActionHandler.ts:31</a></li>
+						<li>Defined in <a href="https://github.com/EOSIO/demux-js-postgres/blob/ff5a7b8/src/MassiveActionHandler.ts#L32">src/MassiveActionHandler.ts:32</a></li>
 					</ul>
 				</aside>
 			</section>
-			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 				<a name="handlerversionname" class="tsd-anchor"></a>
-				<h3><span class="tsd-flag ts-flagProtected">Protected</span> handler<wbr>Version<wbr>Name</h3>
+				<h3>handler<wbr>Version<wbr>Name</h3>
 				<div class="tsd-signature tsd-kind-icon">handler<wbr>Version<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<p>Inherited from AbstractActionHandler.handlerVersionName</p>
 					<ul>
-						<li>Defined in node_modules/demux/dist/AbstractActionHandler.d.ts:11</li>
+						<li>Defined in node_modules/demux/dist/AbstractActionHandler.d.ts:13</li>
 					</ul>
 				</aside>
 			</section>
@@ -1159,29 +1206,67 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">handler<wbr>Versions<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">HandlerVersion</span><span class="tsd-signature-symbol">[]</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/EOSIO/demux-js-postgres/blob/e4afc93/src/MassiveActionHandler.ts#L29">src/MassiveActionHandler.ts:29</a></li>
+						<li>Defined in <a href="https://github.com/EOSIO/demux-js-postgres/blob/ff5a7b8/src/MassiveActionHandler.ts#L30">src/MassiveActionHandler.ts:30</a></li>
 					</ul>
 				</aside>
 			</section>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
+				<a name="info" class="tsd-anchor"></a>
+				<h3>info</h3>
+				<div class="tsd-signature tsd-kind-icon">info<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">HandlerInfo</span></div>
+				<aside class="tsd-sources">
+					<p>Inherited from AbstractActionHandler.info</p>
+					<ul>
+						<li>Defined in node_modules/demux/dist/AbstractActionHandler.d.ts:30</li>
+					</ul>
+				</aside>
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Information about the current state of the Action Handler</p>
+					</div>
+				</div>
+			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+				<a name="initialized" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagProtected">Protected</span> initialized</h3>
+				<div class="tsd-signature tsd-kind-icon">initialized<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+				<aside class="tsd-sources">
+					<p>Inherited from AbstractActionHandler.initialized</p>
+					<ul>
+						<li>Defined in node_modules/demux/dist/AbstractActionHandler.d.ts:15</li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 				<a name="lastprocessedblockhash" class="tsd-anchor"></a>
-				<h3><span class="tsd-flag ts-flagProtected">Protected</span> last<wbr>Processed<wbr>Block<wbr>Hash</h3>
+				<h3>last<wbr>Processed<wbr>Block<wbr>Hash</h3>
 				<div class="tsd-signature tsd-kind-icon">last<wbr>Processed<wbr>Block<wbr>Hash<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<p>Inherited from AbstractActionHandler.lastProcessedBlockHash</p>
 					<ul>
-						<li>Defined in node_modules/demux/dist/AbstractActionHandler.d.ts:10</li>
+						<li>Defined in node_modules/demux/dist/AbstractActionHandler.d.ts:12</li>
 					</ul>
 				</aside>
 			</section>
-			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 				<a name="lastprocessedblocknumber" class="tsd-anchor"></a>
-				<h3><span class="tsd-flag ts-flagProtected">Protected</span> last<wbr>Processed<wbr>Block<wbr>Number</h3>
+				<h3>last<wbr>Processed<wbr>Block<wbr>Number</h3>
 				<div class="tsd-signature tsd-kind-icon">last<wbr>Processed<wbr>Block<wbr>Number<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 				<aside class="tsd-sources">
 					<p>Inherited from AbstractActionHandler.lastProcessedBlockNumber</p>
 					<ul>
-						<li>Defined in node_modules/demux/dist/AbstractActionHandler.d.ts:9</li>
+						<li>Defined in node_modules/demux/dist/AbstractActionHandler.d.ts:11</li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+				<a name="log" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagProtected">Protected</span> log</h3>
+				<div class="tsd-signature tsd-kind-icon">log<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Logger</span></div>
+				<aside class="tsd-sources">
+					<p>Inherited from AbstractActionHandler.log</p>
+					<ul>
+						<li>Defined in node_modules/demux/dist/AbstractActionHandler.d.ts:14</li>
 					</ul>
 				</aside>
 			</section>
@@ -1191,7 +1276,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">massive<wbr>Instance<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/EOSIO/demux-js-postgres/blob/e4afc93/src/MassiveActionHandler.ts#L30">src/MassiveActionHandler.ts:30</a></li>
+						<li>Defined in <a href="https://github.com/EOSIO/demux-js-postgres/blob/ff5a7b8/src/MassiveActionHandler.ts#L31">src/MassiveActionHandler.ts:31</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1201,7 +1286,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">migration<wbr>Sequence<wbr>ByName<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/EOSIO/demux-js-postgres/blob/e4afc93/src/MassiveActionHandler.ts#L26">src/MassiveActionHandler.ts:26</a></li>
+						<li>Defined in <a href="https://github.com/EOSIO/demux-js-postgres/blob/ff5a7b8/src/MassiveActionHandler.ts#L27">src/MassiveActionHandler.ts:27</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-type-declaration">
@@ -1219,7 +1304,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">migration<wbr>Sequences<span class="tsd-signature-symbol">:</span> <a href="../interfaces/migrationsequence.html" class="tsd-signature-type">MigrationSequence</a><span class="tsd-signature-symbol">[]</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/EOSIO/demux-js-postgres/blob/e4afc93/src/MassiveActionHandler.ts#L32">src/MassiveActionHandler.ts:32</a></li>
+						<li>Defined in <a href="https://github.com/EOSIO/demux-js-postgres/blob/ff5a7b8/src/MassiveActionHandler.ts#L33">src/MassiveActionHandler.ts:33</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1232,7 +1317,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">schema<wbr>Instance<span class="tsd-signature-symbol">:</span> </div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/EOSIO/demux-js-postgres/blob/e4afc93/src/MassiveActionHandler.ts#L94">src/MassiveActionHandler.ts:94</a></li>
+						<li>Defined in <a href="https://github.com/EOSIO/demux-js-postgres/blob/ff5a7b8/src/MassiveActionHandler.ts#L105">src/MassiveActionHandler.ts:105</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1243,19 +1328,22 @@ img { max-width: 100%; }
 				<a name="applyupdaters" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagProtected">Protected</span> apply<wbr>Updaters</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
-					<li class="tsd-signature tsd-kind-icon">apply<wbr>Updaters<span class="tsd-signature-symbol">(</span>state<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, block<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Block</span>, isReplay<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, context<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">Action</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">apply<wbr>Updaters<span class="tsd-signature-symbol">(</span>state<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, block<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Block</span>, context<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, isReplay<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">VersionedAction</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<p>Inherited from AbstractActionHandler.applyUpdaters</p>
 							<ul>
-								<li>Defined in node_modules/demux/dist/AbstractActionHandler.d.ts:38</li>
+								<li>Defined in node_modules/demux/dist/AbstractActionHandler.d.ts:74</li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
 							<div class="lead">
-								<p>Process actions against deterministically accumulating updater functions.</p>
+								<p>Process actions against deterministically accumulating <code>Updater</code> functions. Returns a promise of versioned actions
+									for consumption by <code>runEffects</code>, to make sure the correct effects are run on blocks that include a <code>HandlerVersion</code>
+									change. To change a <code>HandlerVersion</code>, have an <code>Updater</code> function return the <code>versionName</code> of the corresponding
+								<code>HandlerVersion</code> you want to change to.</p>
 							</div>
 						</div>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1267,13 +1355,13 @@ img { max-width: 100%; }
 								<h5>block: <span class="tsd-signature-type">Block</span></h5>
 							</li>
 							<li>
-								<h5>isReplay: <span class="tsd-signature-type">boolean</span></h5>
-							</li>
-							<li>
 								<h5>context: <span class="tsd-signature-type">any</span></h5>
 							</li>
+							<li>
+								<h5>isReplay: <span class="tsd-signature-type">boolean</span></h5>
+							</li>
 						</ul>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">Action</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">VersionedAction</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
 					</li>
 				</ul>
 			</section>
@@ -1281,14 +1369,14 @@ img { max-width: 100%; }
 				<a name="handleactions" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagProtected">Protected</span> handle<wbr>Actions</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
-					<li class="tsd-signature tsd-kind-icon">handle<wbr>Actions<span class="tsd-signature-symbol">(</span>state<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, block<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Block</span>, context<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, isReplay<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">handle<wbr>Actions<span class="tsd-signature-symbol">(</span>state<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, context<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, nextBlock<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">NextBlock</span>, isReplay<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<p>Inherited from AbstractActionHandler.handleActions</p>
 							<ul>
-								<li>Defined in node_modules/demux/dist/AbstractActionHandler.d.ts:52</li>
+								<li>Defined in node_modules/demux/dist/AbstractActionHandler.d.ts:88</li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1302,10 +1390,10 @@ img { max-width: 100%; }
 								<h5>state: <span class="tsd-signature-type">any</span></h5>
 							</li>
 							<li>
-								<h5>block: <span class="tsd-signature-type">Block</span></h5>
+								<h5>context: <span class="tsd-signature-type">any</span></h5>
 							</li>
 							<li>
-								<h5>context: <span class="tsd-signature-type">any</span></h5>
+								<h5>nextBlock: <span class="tsd-signature-type">NextBlock</span></h5>
 							</li>
 							<li>
 								<h5>isReplay: <span class="tsd-signature-type">boolean</span></h5>
@@ -1319,14 +1407,14 @@ img { max-width: 100%; }
 				<a name="handleblock" class="tsd-anchor"></a>
 				<h3>handle<wbr>Block</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-					<li class="tsd-signature tsd-kind-icon">handle<wbr>Block<span class="tsd-signature-symbol">(</span>block<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Block</span>, isRollback<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, isFirstBlock<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, isReplay<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">handle<wbr>Block<span class="tsd-signature-symbol">(</span>nextBlock<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">NextBlock</span>, isReplay<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<p>Inherited from AbstractActionHandler.handleBlock</p>
 							<ul>
-								<li>Defined in node_modules/demux/dist/AbstractActionHandler.d.ts:17</li>
+								<li>Defined in node_modules/demux/dist/AbstractActionHandler.d.ts:26</li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1337,19 +1425,13 @@ img { max-width: 100%; }
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>block: <span class="tsd-signature-type">Block</span></h5>
+								<h5>nextBlock: <span class="tsd-signature-type">NextBlock</span></h5>
 							</li>
 							<li>
-								<h5>isRollback: <span class="tsd-signature-type">boolean</span></h5>
-							</li>
-							<li>
-								<h5>isFirstBlock: <span class="tsd-signature-type">boolean</span></h5>
-							</li>
-							<li>
-								<h5><span class="tsd-flag ts-flagOptional">Optional</span> isReplay: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span></h5>
+								<h5>isReplay: <span class="tsd-signature-type">boolean</span></h5>
 							</li>
 						</ul>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">&gt;</span></h4>
 					</li>
 				</ul>
 			</section>
@@ -1364,7 +1446,7 @@ img { max-width: 100%; }
 						<aside class="tsd-sources">
 							<p>Overrides AbstractActionHandler.handleWithState</p>
 							<ul>
-								<li>Defined in <a href="https://github.com/EOSIO/demux-js-postgres/blob/e4afc93/src/MassiveActionHandler.ts#L102">src/MassiveActionHandler.ts:102</a></li>
+								<li>Defined in <a href="https://github.com/EOSIO/demux-js-postgres/blob/ff5a7b8/src/MassiveActionHandler.ts#L113">src/MassiveActionHandler.ts:113</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1398,6 +1480,29 @@ img { max-width: 100%; }
 					</li>
 				</ul>
 			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+				<a name="initialize" class="tsd-anchor"></a>
+				<h3>initialize</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<li class="tsd-signature tsd-kind-icon">initialize<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<p>Inherited from AbstractActionHandler.initialize</p>
+							<ul>
+								<li>Defined in node_modules/demux/dist/AbstractActionHandler.d.ts:34</li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Performs all required initialization for the handler.</p>
+							</div>
+						</div>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					</li>
+				</ul>
+			</section>
 			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected">
 				<a name="loadindexstate" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagProtected">Protected</span> load<wbr>Index<wbr>State</h3>
@@ -1409,7 +1514,7 @@ img { max-width: 100%; }
 						<aside class="tsd-sources">
 							<p>Overrides AbstractActionHandler.loadIndexState</p>
 							<ul>
-								<li>Defined in <a href="https://github.com/EOSIO/demux-js-postgres/blob/e4afc93/src/MassiveActionHandler.ts#L149">src/MassiveActionHandler.ts:149</a></li>
+								<li>Defined in <a href="https://github.com/EOSIO/demux-js-postgres/blob/ff5a7b8/src/MassiveActionHandler.ts#L160">src/MassiveActionHandler.ts:160</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">IndexState</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -1426,10 +1531,51 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/EOSIO/demux-js-postgres/blob/e4afc93/src/MassiveActionHandler.ts#L165">src/MassiveActionHandler.ts:165</a></li>
+								<li>Defined in <a href="https://github.com/EOSIO/demux-js-postgres/blob/ff5a7b8/src/MassiveActionHandler.ts#L176">src/MassiveActionHandler.ts:176</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="migration.html" class="tsd-signature-type">Migration</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+				<a name="matchactiontype" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagProtected">Protected</span> match<wbr>Action<wbr>Type</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+					<li class="tsd-signature tsd-kind-icon">match<wbr>Action<wbr>Type<span class="tsd-signature-symbol">(</span>candidateType<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, subscribedType<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<p>Inherited from AbstractActionHandler.matchActionType</p>
+							<ul>
+								<li>Defined in node_modules/demux/dist/AbstractActionHandler.d.ts:67</li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>This method is used when matching the types of incoming actions against the types the <code>Updater</code>s and <code>Effect</code>s are
+								subscribed to. When this returns true, their corresponding functions will run.</p>
+							</div>
+							<p>By default, this method tests for direct equivalence between the incoming candidate type and the type that is
+							subscribed. Override this method to extend this functionality (e.g. wildcards).</p>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>candidateType: <span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>The incoming action&#39;s type</p>
+								</div>
+							</li>
+							<li>
+								<h5>subscribedType: <span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>The type the Updater of Effect is subscribed to</p>
+								</div>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
 					</li>
 				</ul>
 			</section>
@@ -1443,7 +1589,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/EOSIO/demux-js-postgres/blob/e4afc93/src/MassiveActionHandler.ts#L70">src/MassiveActionHandler.ts:70</a></li>
+								<li>Defined in <a href="https://github.com/EOSIO/demux-js-postgres/blob/ff5a7b8/src/MassiveActionHandler.ts#L53">src/MassiveActionHandler.ts:53</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1482,7 +1628,7 @@ img { max-width: 100%; }
 						<aside class="tsd-sources">
 							<p>Overrides AbstractActionHandler.rollbackTo</p>
 							<ul>
-								<li>Defined in <a href="https://github.com/EOSIO/demux-js-postgres/blob/e4afc93/src/MassiveActionHandler.ts#L185">src/MassiveActionHandler.ts:185</a></li>
+								<li>Defined in <a href="https://github.com/EOSIO/demux-js-postgres/blob/ff5a7b8/src/MassiveActionHandler.ts#L197">src/MassiveActionHandler.ts:197</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1499,48 +1645,49 @@ img { max-width: 100%; }
 				<a name="runeffects" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagProtected">Protected</span> run<wbr>Effects</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
-					<li class="tsd-signature tsd-kind-icon">run<wbr>Effects<span class="tsd-signature-symbol">(</span>versionedActions<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">Action</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span>, block<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Block</span>, context<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					<li class="tsd-signature tsd-kind-icon">run<wbr>Effects<span class="tsd-signature-symbol">(</span>versionedActions<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">VersionedAction</span><span class="tsd-signature-symbol">[]</span>, context<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, nextBlock<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">NextBlock</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<p>Inherited from AbstractActionHandler.runEffects</p>
 							<ul>
-								<li>Defined in node_modules/demux/dist/AbstractActionHandler.d.ts:42</li>
+								<li>Defined in node_modules/demux/dist/AbstractActionHandler.d.ts:78</li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
 							<div class="lead">
-								<p>Process actions against asynchronous side effects.</p>
+								<p>Process versioned actions against asynchronous side effects.</p>
 							</div>
 						</div>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>versionedActions: <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">Action</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></h5>
-							</li>
-							<li>
-								<h5>block: <span class="tsd-signature-type">Block</span></h5>
+								<h5>versionedActions: <span class="tsd-signature-type">VersionedAction</span><span class="tsd-signature-symbol">[]</span></h5>
 							</li>
 							<li>
 								<h5>context: <span class="tsd-signature-type">any</span></h5>
+							</li>
+							<li>
+								<h5>nextBlock: <span class="tsd-signature-type">NextBlock</span></h5>
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 					</li>
 				</ul>
 			</section>
-			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-				<a name="setupdatabase" class="tsd-anchor"></a>
-				<h3>setup<wbr>Database</h3>
-				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">setup<wbr>Database<span class="tsd-signature-symbol">(</span>initSequenceName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected">
+				<a name="setup" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagProtected">Protected</span> setup</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected">
+					<li class="tsd-signature tsd-kind-icon">setup<span class="tsd-signature-symbol">(</span>initSequenceName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
+							<p>Overrides AbstractActionHandler.setup</p>
 							<ul>
-								<li>Defined in <a href="https://github.com/EOSIO/demux-js-postgres/blob/e4afc93/src/MassiveActionHandler.ts#L50">src/MassiveActionHandler.ts:50</a></li>
+								<li>Defined in <a href="https://github.com/EOSIO/demux-js-postgres/blob/ff5a7b8/src/MassiveActionHandler.ts#L81">src/MassiveActionHandler.ts:81</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1570,7 +1717,7 @@ img { max-width: 100%; }
 						<aside class="tsd-sources">
 							<p>Overrides AbstractActionHandler.updateIndexState</p>
 							<ul>
-								<li>Defined in <a href="https://github.com/EOSIO/demux-js-postgres/blob/e4afc93/src/MassiveActionHandler.ts#L126">src/MassiveActionHandler.ts:126</a></li>
+								<li>Defined in <a href="https://github.com/EOSIO/demux-js-postgres/blob/ff5a7b8/src/MassiveActionHandler.ts#L137">src/MassiveActionHandler.ts:137</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1602,7 +1749,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/EOSIO/demux-js-postgres/blob/e4afc93/src/MassiveActionHandler.ts#L203">src/MassiveActionHandler.ts:203</a></li>
+								<li>Defined in <a href="https://github.com/EOSIO/demux-js-postgres/blob/ff5a7b8/src/MassiveActionHandler.ts#L215">src/MassiveActionHandler.ts:215</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
