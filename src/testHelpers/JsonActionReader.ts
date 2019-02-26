@@ -1,4 +1,4 @@
-import { AbstractActionReader, Block } from "demux"
+import { AbstractActionReader, Block } from 'demux'
 
 /**
  * Reads from an array of `Block` objects, useful for testing.
@@ -8,9 +8,8 @@ export class JsonActionReader extends AbstractActionReader {
     public blockchain: Block[],
     public startAtBlock: number = 1,
     protected onlyIrreversible: boolean = false,
-    protected maxHistoryLength: number = 600,
   ) {
-    super(startAtBlock, onlyIrreversible, maxHistoryLength)
+    super({startAtBlock, onlyIrreversible})
   }
 
   public async getHeadBlockNumber(): Promise<number> {
@@ -34,6 +33,10 @@ export class JsonActionReader extends AbstractActionReader {
   }
 
   public async getLastIrreversibleBlockNumber(): Promise<number> {
-    return this.getHeadBlockNumber()
+    return this.lastIrreversibleBlockNumber
+  }
+
+  protected setup(): Promise<void> {
+    return new Promise<void>((resolve) => resolve())
   }
 }

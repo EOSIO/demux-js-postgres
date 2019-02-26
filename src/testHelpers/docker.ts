@@ -1,15 +1,15 @@
-import { Container } from "dockerode"
-import { Stream } from "stream"
+import { Container } from 'dockerode'
+import { Stream } from 'stream'
 
 export function promisifyStream(stream: Stream): Promise<string> {
   const data: Buffer[] = []
   return new Promise((resolve, reject) => {
-    stream.on("data", (chunk) => data.push(chunk))
-    stream.on("end", () => {
+    stream.on('data', (chunk) => data.push(chunk))
+    stream.on('end', () => {
       const toReturn = Buffer.concat(data).toString()
       resolve(toReturn)
     })
-    stream.on("error", () => reject())
+    stream.on('error', () => reject())
   })
 }
 
@@ -22,14 +22,14 @@ export async function waitForPostgres(container: Container) {
   let connectionTries = 0
   while (connectionTries < 40) {
     const exec = await container.exec({
-      Cmd: ["pg_isready"],
+      Cmd: ['pg_isready'],
       AttachStdin: true,
       AttachStdout: true,
     })
     const { output } = await exec.start({ hijack: true, stdin: true })
     const data = await promisifyStream(output)
-    const status = data.split(" - ")[1].trim()
-    if (status === "accepting connections") {
+    const status = data.split(' - ')[1].trim()
+    if (status === 'accepting connections') {
       await wait(1000)
       break
     }
@@ -37,7 +37,7 @@ export async function waitForPostgres(container: Container) {
     await wait(500)
   }
   if (connectionTries === 30) {
-    throw Error("Too many tries to connect to database")
+    throw Error('Too many tries to connect to database')
   }
 }
 
@@ -61,7 +61,7 @@ export async function startPostgresContainer(
     Image: imageName,
     name: containerName,
     Tty: false,
-    PortBindings: { "5432/tcp": [{ HostPort: hostPortString }] },
+    PortBindings: { '5432/tcp': [{ HostPort: hostPortString }] },
     Env: [
       `POSTGRES_DB=${dbName}`,
       `POSTGRES_USER=${dbUser}`,
@@ -77,7 +77,7 @@ export async function removePostgresContainer(docker: any, containerName: string
   for (const containerInfo of containers) {
     if (containerInfo.Names[0] === `/${containerName}`) {
       const container = docker.getContainer(containerInfo.Id)
-      if (containerInfo.State !== "exited") {
+      if (containerInfo.State !== 'exited') {
         await container.stop()
       }
       await container.remove()
