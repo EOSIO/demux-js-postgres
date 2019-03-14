@@ -1,4 +1,4 @@
-import { AbstractActionHandler, Block, HandlerVersion, IndexState, NotInitializedError } from 'demux'
+import { AbstractActionHandler, HandlerVersion, IndexState, NextBlock, NotInitializedError } from 'demux'
 import { IDatabase } from 'pg-promise'
 import { MismatchedMigrationsError, NonExistentMigrationError, NonUniqueMigrationSequenceError } from './errors'
 import { MigrationSequence } from './interfaces'
@@ -111,41 +111,49 @@ export class MassiveActionHandler extends AbstractActionHandler {
   }
 
   protected async handleWithState(handle: (state: any, context?: any) => void): Promise<void> {
-    await this.massiveInstance.withTransaction(async (tx: any) => {
-      let db
-      if (this.dbSchema === 'public') {
-        db = tx
-      } else {
-        db = tx[this.dbSchema]
-      }
-      this.warnOverwrite(db, 'migrate')
-      db.migrate = async (sequenceName: string) => await this.migrate(sequenceName, tx.instance)
-      this.warnOverwrite(db, 'txid')
-      db.txid = (await tx.instance.one('select txid_current()')).txid_current
-      try {
-        await handle(db)
-      } catch (err) {
-        throw err // Throw error to trigger ROLLBACK
-      }
-    }, {
-      mode: new this.massiveInstance.pgp.txMode.TransactionMode({
-        tiLevel: this.massiveInstance.pgp.txMode.isolationLevel.serializable,
-      }),
-    })
+    const indexState = await this.loadIndexState()
+    const { isReplay, lastIrreversibleBlockNumber, blockNumber } = indexState
+    if (isReplay && blockNumber <= lastIrreversibleBlockNumber) {
+      // TODO: run without transactions and without cyanaudit (in a new method)
+    } else {
+      // TODO: refactor this out to a new method
+      await this.massiveInstance.withTransaction(async (tx: any) => {
+        let db
+        if (this.dbSchema === 'public') {
+          db = tx
+        } else {
+          db = tx[this.dbSchema]
+        }
+        this.warnOverwrite(db, 'migrate')
+        db.migrate = async (sequenceName: string) => await this.migrate(sequenceName, tx.instance)
+        this.warnOverwrite(db, 'txid')
+        db.txid = (await tx.instance.one('select txid_current()')).txid_current
+        try {
+          await handle(db)
+        } catch (err) {
+          throw err // Throw error to trigger ROLLBACK
+        }
+      }, {
+        mode: new this.massiveInstance.pgp.txMode.TransactionMode({
+          tiLevel: this.massiveInstance.pgp.txMode.isolationLevel.serializable,
+        }),
+      })
+    }
   }
 
   protected async updateIndexState(
     state: any,
-    block: Block,
+    nextBlock: NextBlock,
     isReplay: boolean,
     handlerVersionName: string,
   ): Promise<void> {
-    const { blockInfo } = block
+    const { block: { blockInfo } } = nextBlock
     const fromDb = (await state._index_state.findOne({ id: 1 })) || {}
     const toSave = {
       ...fromDb,
       block_number: blockInfo.blockNumber,
       block_hash: blockInfo.blockHash,
+      last_irreversible_block_number: nextBlock.lastIrreversibleBlockNumber,
       is_replay: isReplay,
       handler_version_name: handlerVersionName,
     }
@@ -167,6 +175,7 @@ export class MassiveActionHandler extends AbstractActionHandler {
     const indexState = await this.schemaInstance._index_state.findOne({ id: 1 }) || defaultIndexState
     return {
       blockNumber: indexState.block_number,
+      lastIrreversibleBlockNumber: indexState.last_irreversible_block_number,
       blockHash: indexState.block_hash,
       handlerVersionName: indexState.handler_version_name,
       isReplay: indexState.is_replay,
