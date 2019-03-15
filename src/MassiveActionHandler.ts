@@ -114,10 +114,10 @@ export class MassiveActionHandler extends AbstractActionHandler {
   protected async handleWithState(handle: (state: any, context?: any) => void): Promise<void> {
     const indexState = await this.loadIndexState()
     const { isReplay, lastIrreversibleBlockNumber, blockNumber } = indexState
-    if (isReplay && blockNumber <= lastIrreversibleBlockNumber) {
+    if (isReplay && blockNumber < lastIrreversibleBlockNumber) {
       await this.turnOffCyanAudit()
       try {
-        let db = this.schemaInstance
+        const db = this.schemaInstance
         // Add arbitrary value for txid since this cannot be null
         // txid can be arbitrary since it is unnecessary when cyanaudit is off
         db.txid = -1
@@ -127,7 +127,7 @@ export class MassiveActionHandler extends AbstractActionHandler {
       } 
     } else {
       // TODO: refactor this out to a new method
-      await this.turnOnCyanAudit()    
+      await this.turnOnCyanAudit()
       await this.massiveInstance.withTransaction(async (tx: any) => {
         let db
         if (this.dbSchema === 'public') {
@@ -179,7 +179,7 @@ export class MassiveActionHandler extends AbstractActionHandler {
   protected async loadIndexState(): Promise<IndexState> {
     const defaultIndexState = {
       block_number: 0,
-      lastIrreversibleBlockNumber: 2,
+      last_irreversible_block_number: 0,
       block_hash: '',
       handler_version_name: 'v1',
       is_replay: false,
@@ -246,7 +246,8 @@ export class MassiveActionHandler extends AbstractActionHandler {
         await this.massiveInstance.query('SET cyanaudit.enabled = 1;')
         this.cyanAuditStatus = true
         this.log.info('Cyan Audit enabled!')
-      } catch {
+      } catch (e) {
+        this.log.error('Error: ', e)
         throw new CyanAuditError(true)
       }
     }
@@ -257,7 +258,8 @@ export class MassiveActionHandler extends AbstractActionHandler {
       await this.massiveInstance.query('SET cyanaudit.enabled = 0;')
       this.cyanAuditStatus = false
       this.log.info('Cyan Audit disabled!')
-    } catch {
+    } catch (e) {
+      this.log.error('Error: ', e)
       throw new CyanAuditError(false)
     }
   }

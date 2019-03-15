@@ -93,6 +93,10 @@ export class MigrationRunner {
   protected async installCyanAudit() {
     const cyanaudit = new Migration('', '', path.join(__dirname, 'cyanaudit/cyanaudit--2.2.0.sql'))
     await cyanaudit.up(this.pgp)
+
+    const cyanauditExt = new Migration('', '', path.join(__dirname, 'cyanaudit/cyanaudit-ext.sql'))
+    await cyanauditExt.up(this.pgp)
+
     await this.refreshCyanAudit()
   }
 
