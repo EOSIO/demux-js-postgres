@@ -69,3 +69,10 @@ export class MissingTableError extends Error {
     Object.setPrototypeOf(this, MissingTableError.prototype)
   }
 }
+
+export class CyanAuditError extends Error {
+  constructor(cyanAuditStatus: boolean) {
+    super(`Unable to turn Cyan Audit ${cyanAuditStatus ? 'on' : 'off'}`)
+    Object.setPrototypeOf(this, CyanAuditError.prototype)
+  }
+}

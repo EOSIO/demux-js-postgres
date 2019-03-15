@@ -188,4 +188,38 @@ describe('TestMassiveActionHandler', () => {
     const forkedTaskComplete = await db.task.findOne({ name: 'Forked blockchain' })
     expect(forkedTaskComplete.completed).toBe(true)
   })
+
+  it('with Cyan Audit off if behind lastIrreversibleBlock', async () => {
+    actionReader.getLastIrreversibleBlockNumber = jest.fn().mockReturnValue(1)
+    const nextBlock = await actionReader.getNextBlock()
+    expect(nextBlock.lastIrreversibleBlockNumber).toEqual(1)
+    await actionHandler.handleBlock(nextBlock, true)
+    const nextBlock2 = await actionReader.getNextBlock()
+    await actionHandler.handleBlock(nextBlock2, true)
+    expect(actionHandler._getCyanAuditStatus()).toEqual(false)
+  })
+
+  it('with Cyan Audit on if isReplay is false', async () => {
+    actionReader.getLastIrreversibleBlockNumber = jest.fn().mockReturnValue(1)
+    const nextBlock = await actionReader.getNextBlock()
+    await actionHandler.handleBlock(nextBlock, false)
+    const nextBlock2 = await actionReader.getNextBlock()
+    await actionHandler.handleBlock(nextBlock2, false)
+    const nextBlock3 = await actionReader.getNextBlock()
+    await actionHandler.handleBlock(nextBlock3, false)
+    expect(actionHandler._getCyanAuditStatus()).toEqual(true)
+  })
+
+  it('with Cyan Audit on if new block comes after lastIrreversibleBlock', async () => {
+    actionReader.getLastIrreversibleBlockNumber = jest.fn().mockReturnValue(1)
+    const nextBlock = await actionReader.getNextBlock()
+    expect(nextBlock.lastIrreversibleBlockNumber).toEqual(1)
+    await actionHandler.handleBlock(nextBlock, true)
+    const nextBlock2 = await actionReader.getNextBlock()
+    await actionHandler.handleBlock(nextBlock2, true)
+    const nextBlock3 = await actionReader.getNextBlock()
+    await actionHandler.handleBlock(nextBlock3, true)
+    expect(actionHandler._getCyanAuditStatus()).toEqual(true)
+  })
+
 })

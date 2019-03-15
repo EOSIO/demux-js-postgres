@@ -1,6 +1,6 @@
 import { AbstractActionHandler, HandlerVersion, IndexState, NextBlock, NotInitializedError } from 'demux'
 import { IDatabase } from 'pg-promise'
-import { MismatchedMigrationsError, NonExistentMigrationError, NonUniqueMigrationSequenceError } from './errors'
+import { MismatchedMigrationsError, NonExistentMigrationError, NonUniqueMigrationSequenceError, CyanAuditError } from './errors'
 import { MigrationSequence } from './interfaces'
 import { Migration } from './Migration'
 import { MigrationRunner } from './MigrationRunner'
@@ -25,6 +25,7 @@ import { MigrationRunner } from './MigrationRunner'
 export class MassiveActionHandler extends AbstractActionHandler {
   protected allMigrations: Migration[] = []
   protected migrationSequenceByName: { [key: string]: MigrationSequence } = {}
+  protected cyanAuditStatus: boolean | null = null
 
   constructor(
     protected handlerVersions: HandlerVersion[],
@@ -114,9 +115,19 @@ export class MassiveActionHandler extends AbstractActionHandler {
     const indexState = await this.loadIndexState()
     const { isReplay, lastIrreversibleBlockNumber, blockNumber } = indexState
     if (isReplay && blockNumber <= lastIrreversibleBlockNumber) {
-      // TODO: run without transactions and without cyanaudit (in a new method)
+      await this.turnOffCyanAudit()
+      try {
+        let db = this.schemaInstance
+        // Add arbitrary value for txid since this cannot be null
+        // txid can be arbitrary since it is unnecessary when cyanaudit is off
+        db.txid = -1
+        await handle(db)
+      } catch (e) {
+        throw e
+      } 
     } else {
       // TODO: refactor this out to a new method
+      await this.turnOnCyanAudit()    
       await this.massiveInstance.withTransaction(async (tx: any) => {
         let db
         if (this.dbSchema === 'public') {
@@ -168,6 +179,7 @@ export class MassiveActionHandler extends AbstractActionHandler {
   protected async loadIndexState(): Promise<IndexState> {
     const defaultIndexState = {
       block_number: 0,
+      lastIrreversibleBlockNumber: 2,
       block_hash: '',
       handler_version_name: 'v1',
       is_replay: false,
@@ -225,6 +237,28 @@ export class MassiveActionHandler extends AbstractActionHandler {
     if (db.hasOwnProperty(toOverwrite)) {
       console.warn(`Assignment of '${toOverwrite}' on Massive object instance is overwriting property of the same ` +
                    'name. Please use a different table or schema name.')
+    }
+  }
+
+  private async turnOnCyanAudit(): Promise<void> {
+    if (!this.cyanAuditStatus) {
+      try {
+        await this.massiveInstance.query('SET cyanaudit.enabled = 1;')
+        this.cyanAuditStatus = true
+        this.log.info('Cyan Audit enabled!')
+      } catch {
+        throw new CyanAuditError(true)
+      }
+    }
+  }
+
+  private async turnOffCyanAudit(): Promise<void> {
+    try {
+      await this.massiveInstance.query('SET cyanaudit.enabled = 0;')
+      this.cyanAuditStatus = false
+      this.log.info('Cyan Audit disabled!')
+    } catch {
+      throw new CyanAuditError(false)
     }
   }
 }

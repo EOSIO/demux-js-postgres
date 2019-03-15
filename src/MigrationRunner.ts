@@ -71,6 +71,7 @@ export class MigrationRunner {
         block_number         integer NOT NULL,
         block_hash           text    NOT NULL,
         is_replay            boolean NOT NULL,
+        last_irreversible_block_number integer NOT NULL,
         handler_version_name text    DEFAULT 'v1'
       );
     `, [this.schemaName])
