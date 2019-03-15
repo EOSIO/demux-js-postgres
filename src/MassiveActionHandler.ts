@@ -25,7 +25,7 @@ import { MigrationRunner } from './MigrationRunner'
 export class MassiveActionHandler extends AbstractActionHandler {
   protected allMigrations: Migration[] = []
   protected migrationSequenceByName: { [key: string]: MigrationSequence } = {}
-  protected cyanAuditStatus: boolean | null = null
+  protected cyanAuditStatus: boolean = false
 
   constructor(
     protected handlerVersions: HandlerVersion[],
@@ -254,13 +254,15 @@ export class MassiveActionHandler extends AbstractActionHandler {
   }
 
   private async turnOffCyanAudit(): Promise<void> {
-    try {
-      await this.massiveInstance.query('SET cyanaudit.enabled = 0;')
-      this.cyanAuditStatus = false
-      this.log.info('Cyan Audit disabled!')
-    } catch (e) {
-      this.log.error('Error: ', e)
-      throw new CyanAuditError(false)
+    if (this.cyanAuditStatus) {
+      try {
+        await this.massiveInstance.query('SET cyanaudit.enabled = 0;')
+        this.cyanAuditStatus = false
+        this.log.info('Cyan Audit disabled!')
+      } catch (e) {
+        this.log.error('Error: ', e)
+        throw new CyanAuditError(false)
+      }
     }
   }
 }
