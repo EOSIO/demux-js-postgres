@@ -126,29 +126,8 @@ export class MassiveActionHandler extends AbstractActionHandler {
         throw e
       } 
     } else {
-      // TODO: refactor this out to a new method
       await this.turnOnCyanAudit()
-      await this.massiveInstance.withTransaction(async (tx: any) => {
-        let db
-        if (this.dbSchema === 'public') {
-          db = tx
-        } else {
-          db = tx[this.dbSchema]
-        }
-        this.warnOverwrite(db, 'migrate')
-        db.migrate = async (sequenceName: string) => await this.migrate(sequenceName, tx.instance)
-        this.warnOverwrite(db, 'txid')
-        db.txid = (await tx.instance.one('select txid_current()')).txid_current
-        try {
-          await handle(db)
-        } catch (err) {
-          throw err // Throw error to trigger ROLLBACK
-        }
-      }, {
-        mode: new this.massiveInstance.pgp.txMode.TransactionMode({
-          tiLevel: this.massiveInstance.pgp.txMode.isolationLevel.serializable,
-        }),
-      })
+      await this.handleBlockWithTransactionId(handle)
     }
   }
 
@@ -264,5 +243,29 @@ export class MassiveActionHandler extends AbstractActionHandler {
         throw new CyanAuditError(false)
       }
     }
+  }
+
+  private handleBlockWithTransactionId(handle: (state: any, context?: any) => void): Promise<void> {
+    return this.massiveInstance.withTransaction(async (tx: any) => {
+      let db
+      if (this.dbSchema === 'public') {
+        db = tx
+      } else {
+        db = tx[this.dbSchema]
+      }
+      this.warnOverwrite(db, 'migrate')
+      db.migrate = async (sequenceName: string) => await this.migrate(sequenceName, tx.instance)
+      this.warnOverwrite(db, 'txid')
+      db.txid = (await tx.instance.one('select txid_current()')).txid_current
+      try {
+        await handle(db)
+      } catch (e) {
+        throw e // Throw error to trigger ROLLBACK
+      }
+    }, {
+      mode: new this.massiveInstance.pgp.txMode.TransactionMode({
+        tiLevel: this.massiveInstance.pgp.txMode.isolationLevel.serializable,
+      }),
+    })
   }
 }
