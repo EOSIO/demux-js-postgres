@@ -10,6 +10,6 @@ export class TestMassiveActionHandler extends MassiveActionHandler {
     return await this.loadIndexState()
   }
   public _getCyanAuditStatus() {
-  	return this.cyanAuditStatus
+    return this.cyanAuditStatus
   }
 }

@@ -1,6 +1,11 @@
 import { AbstractActionHandler, HandlerVersion, IndexState, NextBlock, NotInitializedError } from 'demux'
 import { IDatabase } from 'pg-promise'
-import { MismatchedMigrationsError, NonExistentMigrationError, NonUniqueMigrationSequenceError, CyanAuditError } from './errors'
+import {
+  CyanAuditError,
+  MismatchedMigrationsError,
+  NonExistentMigrationError,
+  NonUniqueMigrationSequenceError,
+} from './errors'
 import { MigrationSequence } from './interfaces'
 import { Migration } from './Migration'
 import { MigrationRunner } from './MigrationRunner'
@@ -124,7 +129,7 @@ export class MassiveActionHandler extends AbstractActionHandler {
         await handle(db)
       } catch (e) {
         throw e
-      } 
+      }
     } else {
       await this.turnOnCyanAudit()
       await this.handleBlockWithTransactionId(handle)
