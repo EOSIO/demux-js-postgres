@@ -9,4 +9,7 @@ export class TestMassiveActionHandler extends MassiveActionHandler {
   public async _loadIndexState() {
     return await this.loadIndexState()
   }
+  public _getCyanAuditStatus() {
+    return this.cyanAuditStatus
+  }
 }

@@ -1,6 +1,11 @@
-import { AbstractActionHandler, Block, HandlerVersion, IndexState, NotInitializedError } from 'demux'
+import { AbstractActionHandler, HandlerVersion, IndexState, NextBlock, NotInitializedError } from 'demux'
 import { IDatabase } from 'pg-promise'
-import { MismatchedMigrationsError, NonExistentMigrationError, NonUniqueMigrationSequenceError } from './errors'
+import {
+  CyanAuditError,
+  MismatchedMigrationsError,
+  NonExistentMigrationError,
+  NonUniqueMigrationSequenceError,
+} from './errors'
 import { MigrationSequence } from './interfaces'
 import { Migration } from './Migration'
 import { MigrationRunner } from './MigrationRunner'
@@ -25,6 +30,7 @@ import { MigrationRunner } from './MigrationRunner'
 export class MassiveActionHandler extends AbstractActionHandler {
   protected allMigrations: Migration[] = []
   protected migrationSequenceByName: { [key: string]: MigrationSequence } = {}
+  protected cyanAuditStatus: boolean = false
 
   constructor(
     protected handlerVersions: HandlerVersion[],
@@ -111,41 +117,38 @@ export class MassiveActionHandler extends AbstractActionHandler {
   }
 
   protected async handleWithState(handle: (state: any, context?: any) => void): Promise<void> {
-    await this.massiveInstance.withTransaction(async (tx: any) => {
-      let db
-      if (this.dbSchema === 'public') {
-        db = tx
-      } else {
-        db = tx[this.dbSchema]
-      }
-      this.warnOverwrite(db, 'migrate')
-      db.migrate = async (sequenceName: string) => await this.migrate(sequenceName, tx.instance)
-      this.warnOverwrite(db, 'txid')
-      db.txid = (await tx.instance.one('select txid_current()')).txid_current
+    const indexState = await this.loadIndexState()
+    const { isReplay, lastIrreversibleBlockNumber, blockNumber } = indexState
+    if (isReplay && blockNumber < lastIrreversibleBlockNumber) {
+      await this.turnOffCyanAudit()
       try {
+        const db = this.schemaInstance
+        // Add arbitrary value for txid since this cannot be null
+        // txid can be arbitrary since it is unnecessary when cyanaudit is off
+        db.txid = -1
         await handle(db)
-      } catch (err) {
-        throw err // Throw error to trigger ROLLBACK
+      } catch (e) {
+        throw e
       }
-    }, {
-      mode: new this.massiveInstance.pgp.txMode.TransactionMode({
-        tiLevel: this.massiveInstance.pgp.txMode.isolationLevel.serializable,
-      }),
-    })
+    } else {
+      await this.turnOnCyanAudit()
+      await this.handleBlockWithTransactionId(handle)
+    }
   }
 
   protected async updateIndexState(
     state: any,
-    block: Block,
+    nextBlock: NextBlock,
     isReplay: boolean,
     handlerVersionName: string,
   ): Promise<void> {
-    const { blockInfo } = block
+    const { block: { blockInfo } } = nextBlock
     const fromDb = (await state._index_state.findOne({ id: 1 })) || {}
     const toSave = {
       ...fromDb,
       block_number: blockInfo.blockNumber,
       block_hash: blockInfo.blockHash,
+      last_irreversible_block_number: nextBlock.lastIrreversibleBlockNumber,
       is_replay: isReplay,
       handler_version_name: handlerVersionName,
     }
@@ -160,6 +163,7 @@ export class MassiveActionHandler extends AbstractActionHandler {
   protected async loadIndexState(): Promise<IndexState> {
     const defaultIndexState = {
       block_number: 0,
+      last_irreversible_block_number: 0,
       block_hash: '',
       handler_version_name: 'v1',
       is_replay: false,
@@ -167,6 +171,7 @@ export class MassiveActionHandler extends AbstractActionHandler {
     const indexState = await this.schemaInstance._index_state.findOne({ id: 1 }) || defaultIndexState
     return {
       blockNumber: indexState.block_number,
+      lastIrreversibleBlockNumber: indexState.last_irreversible_block_number,
       blockHash: indexState.block_hash,
       handlerVersionName: indexState.handler_version_name,
       isReplay: indexState.is_replay,
@@ -217,5 +222,55 @@ export class MassiveActionHandler extends AbstractActionHandler {
       console.warn(`Assignment of '${toOverwrite}' on Massive object instance is overwriting property of the same ` +
                    'name. Please use a different table or schema name.')
     }
+  }
+
+  private async turnOnCyanAudit(): Promise<void> {
+    if (!this.cyanAuditStatus) {
+      try {
+        await this.massiveInstance.query('SET cyanaudit.enabled = 1;')
+        this.cyanAuditStatus = true
+        this.log.info('Cyan Audit enabled!')
+      } catch (e) {
+        this.log.error('Error: ', e)
+        throw new CyanAuditError(true)
+      }
+    }
+  }
+
+  private async turnOffCyanAudit(): Promise<void> {
+    if (this.cyanAuditStatus) {
+      try {
+        await this.massiveInstance.query('SET cyanaudit.enabled = 0;')
+        this.cyanAuditStatus = false
+        this.log.info('Cyan Audit disabled!')
+      } catch (e) {
+        this.log.error('Error: ', e)
+        throw new CyanAuditError(false)
+      }
+    }
+  }
+
+  private handleBlockWithTransactionId(handle: (state: any, context?: any) => void): Promise<void> {
+    return this.massiveInstance.withTransaction(async (tx: any) => {
+      let db
+      if (this.dbSchema === 'public') {
+        db = tx
+      } else {
+        db = tx[this.dbSchema]
+      }
+      this.warnOverwrite(db, 'migrate')
+      db.migrate = async (sequenceName: string) => await this.migrate(sequenceName, tx.instance)
+      this.warnOverwrite(db, 'txid')
+      db.txid = (await tx.instance.one('select txid_current()')).txid_current
+      try {
+        await handle(db)
+      } catch (e) {
+        throw e // Throw error to trigger ROLLBACK
+      }
+    }, {
+      mode: new this.massiveInstance.pgp.txMode.TransactionMode({
+        tiLevel: this.massiveInstance.pgp.txMode.isolationLevel.serializable,
+      }),
+    })
   }
 }

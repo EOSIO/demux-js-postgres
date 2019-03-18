@@ -120,7 +120,7 @@ describe('TestMassiveActionHandler', () => {
       todo_id: 2,
     })
 
-    const nextBlock3  = await actionReader.getNextBlock()
+    const nextBlock3 = await actionReader.getNextBlock()
     await actionHandler.handleBlock(nextBlock3, false)
 
     const milk = await db.task.findOne({ name: 'milk' })
@@ -188,4 +188,55 @@ describe('TestMassiveActionHandler', () => {
     const forkedTaskComplete = await db.task.findOne({ name: 'Forked blockchain' })
     expect(forkedTaskComplete.completed).toBe(true)
   })
+
+  it('with Cyan Audit off if behind lastIrreversibleBlock', async () => {
+    actionReader.getLastIrreversibleBlockNumber = jest.fn().mockReturnValue(2)
+    const nextBlock = await actionReader.getNextBlock()
+    expect(nextBlock.lastIrreversibleBlockNumber).toEqual(2)
+    await actionHandler.handleBlock(nextBlock, true)
+
+    const nextBlock2 = await actionReader.getNextBlock()
+    await actionHandler.handleBlock(nextBlock2, true)
+    let result = await massiveInstance.query('select cyanaudit.fn_get_is_enabled();')
+    expect(result[0].fn_get_is_enabled).toBe(false)
+    expect(actionHandler._getCyanAuditStatus()).toEqual(false)
+
+    const nextBlock3 = await actionReader.getNextBlock()
+    await actionHandler.handleBlock(nextBlock3, true)
+    result = await massiveInstance.query('select cyanaudit.fn_get_is_enabled();')
+    expect(result[0].fn_get_is_enabled).toBe(true)
+    expect(actionHandler._getCyanAuditStatus()).toEqual(true)
+  })
+
+  it('with Cyan Audit on if isReplay is false', async () => {
+    actionReader.getLastIrreversibleBlockNumber = jest.fn().mockReturnValue(2)
+    const nextBlock = await actionReader.getNextBlock()
+    await actionHandler.handleBlock(nextBlock, false)
+    const nextBlock2 = await actionReader.getNextBlock()
+    await actionHandler.handleBlock(nextBlock2, false)
+    let result = await massiveInstance.query('select cyanaudit.fn_get_is_enabled();')
+    expect(result[0].fn_get_is_enabled).toBe(true)
+    expect(actionHandler._getCyanAuditStatus()).toEqual(true)
+
+    const nextBlock3 = await actionReader.getNextBlock()
+    await actionHandler.handleBlock(nextBlock3, false)
+    result = await massiveInstance.query('select cyanaudit.fn_get_is_enabled();')
+    expect(result[0].fn_get_is_enabled).toBe(true)
+    expect(actionHandler._getCyanAuditStatus()).toEqual(true)
+  })
+
+  it('with Cyan Audit on if new block comes after lastIrreversibleBlock', async () => {
+    actionReader.getLastIrreversibleBlockNumber = jest.fn().mockReturnValue(2)
+    const nextBlock = await actionReader.getNextBlock()
+    expect(nextBlock.lastIrreversibleBlockNumber).toEqual(2)
+    await actionHandler.handleBlock(nextBlock, true)
+    const nextBlock2 = await actionReader.getNextBlock()
+    await actionHandler.handleBlock(nextBlock2, true)
+    const nextBlock3 = await actionReader.getNextBlock()
+    await actionHandler.handleBlock(nextBlock3, true)
+    const result = await massiveInstance.query('select cyanaudit.fn_get_is_enabled();')
+    expect(result[0].fn_get_is_enabled).toBe(true)
+    expect(actionHandler._getCyanAuditStatus()).toEqual(true)
+  })
+
 })

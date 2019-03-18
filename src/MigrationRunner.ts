@@ -71,6 +71,7 @@ export class MigrationRunner {
         block_number         integer NOT NULL,
         block_hash           text    NOT NULL,
         is_replay            boolean NOT NULL,
+        last_irreversible_block_number integer NOT NULL,
         handler_version_name text    DEFAULT 'v1'
       );
     `, [this.schemaName])
@@ -92,6 +93,10 @@ export class MigrationRunner {
   protected async installCyanAudit() {
     const cyanaudit = new Migration('', '', path.join(__dirname, 'cyanaudit/cyanaudit--2.2.0.sql'))
     await cyanaudit.up(this.pgp)
+
+    const cyanauditExt = new Migration('', '', path.join(__dirname, 'cyanaudit/cyanaudit-ext.sql'))
+    await cyanauditExt.up(this.pgp)
+
     await this.refreshCyanAudit()
   }
 
