@@ -38,10 +38,12 @@
   },
   "scripts": {
     "build": "tsc && cp -R src/cyanaudit dist",
+    "build-all": "rm -rf dist/* && tsc && yarn build-docs",
     "lint": "tslint -c tslint.json -p tsconfig.json",
     "test": "PGPASSWORD=docker jest",
-    "build-docs": "./scripts/build-docs.sh",
-    "current-version": "echo $npm_package_version"
+    "build-docs": "rm -rf docs && ./scripts/build-docs.sh",
+    "current-version": "echo $npm_package_version",
+    "prepublishOnly": "yarn build"
   },
   "jest": {
     "moduleFileExtensions": [
