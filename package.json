@@ -34,7 +34,7 @@
     "pg-promise": "8.5.3"
   },
   "peerDependencies": {
-    "demux": "4.0.0"
+    "demux": "^5.0.0"
   },
   "scripts": {
     "build": "tsc && cp -R src/cyanaudit dist",
