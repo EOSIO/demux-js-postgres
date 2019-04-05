@@ -91,7 +91,7 @@ export class MassiveActionHandler extends AbstractActionHandler {
 
     if (!this.migrationSequenceByName[initSequenceName]) {
       if (initSequenceName === 'init') {
-        console.warn(`No 'init' Migration sequence was provided, nor was a different initSequenceName.` +
+        this.log.warn(`No 'init' Migration sequence was provided, nor was a different initSequenceName.` +
                      'No initial migrations have been run.')
       } else {
         throw new NonExistentMigrationError(initSequenceName)
@@ -219,7 +219,7 @@ export class MassiveActionHandler extends AbstractActionHandler {
 
   private warnOverwrite(db: any, toOverwrite: string): void {
     if (db.hasOwnProperty(toOverwrite)) {
-      console.warn(`Assignment of '${toOverwrite}' on Massive object instance is overwriting property of the same ` +
+      this.log.warn(`Assignment of '${toOverwrite}' on Massive object instance is overwriting property of the same ` +
                    'name. Please use a different table or schema name.')
     }
   }
