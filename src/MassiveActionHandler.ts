@@ -30,7 +30,7 @@ import { MigrationRunner } from './MigrationRunner'
 export class MassiveActionHandler extends AbstractActionHandler {
   protected allMigrations: Migration[] = []
   protected migrationSequenceByName: { [key: string]: MigrationSequence } = {}
-  protected cyanAuditStatus: boolean = false
+  protected cyanauditEnabled: boolean = false
 
   constructor(
     protected handlerVersions: HandlerVersion[],
@@ -123,9 +123,6 @@ export class MassiveActionHandler extends AbstractActionHandler {
       await this.turnOffCyanAudit()
       try {
         const db = this.schemaInstance
-        // Add arbitrary value for txid since this cannot be null
-        // txid can be arbitrary since it is unnecessary when cyanaudit is off
-        db.txid = -1
         await handle(db)
       } catch (e) {
         throw e
@@ -154,10 +151,12 @@ export class MassiveActionHandler extends AbstractActionHandler {
     }
     await state._index_state.save(toSave)
 
-    await state._block_number_txid.insert({
-      block_number: blockInfo.blockNumber,
-      txid: state.txid,
-    })
+    if (this.cyanauditEnabled) {
+      await state._block_number_txid.insert({
+        block_number: blockInfo.blockNumber,
+        txid: state.txid,
+      })
+    }
   }
 
   protected async loadIndexState(): Promise<IndexState> {
@@ -225,10 +224,10 @@ export class MassiveActionHandler extends AbstractActionHandler {
   }
 
   private async turnOnCyanAudit(): Promise<void> {
-    if (!this.cyanAuditStatus) {
+    if (!this.cyanauditEnabled) {
       try {
         await this.massiveInstance.query('SET cyanaudit.enabled = 1;')
-        this.cyanAuditStatus = true
+        this.cyanauditEnabled = true
         this.log.info('Cyan Audit enabled!')
       } catch (e) {
         this.log.error('Error: ', e)
@@ -238,10 +237,10 @@ export class MassiveActionHandler extends AbstractActionHandler {
   }
 
   private async turnOffCyanAudit(): Promise<void> {
-    if (this.cyanAuditStatus) {
+    if (this.cyanauditEnabled) {
       try {
         await this.massiveInstance.query('SET cyanaudit.enabled = 0;')
-        this.cyanAuditStatus = false
+        this.cyanauditEnabled = false
         this.log.info('Cyan Audit disabled!')
       } catch (e) {
         this.log.error('Error: ', e)
