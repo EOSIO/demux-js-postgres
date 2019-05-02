@@ -16,7 +16,7 @@ npm install massive --save
 
 ### MassiveActionHandler
 
-The `MassiveActionHandler` uses [massive-js](https://github.com/dmfay/massive-js) to interact with a Postgres database for storing internal demux state and state calculated by Updaters. Rollback of state due to forks is supported by committing all database writes to per-block databases transactions, and utilizing [Cyan Audit](https://bitbucket.org/neadwerx/cyanaudit/overview) to reverse those transactions in reverse order when needed.
+The `MassiveActionHandler` uses [massive-js](https://gitlab.com/dmfay/massive-js) to interact with a Postgres database for storing internal demux state and state calculated by Updaters. Rollback of state due to forks is supported by committing all database writes to per-block databases transactions, and utilizing [Cyan Audit](https://bitbucket.org/neadwerx/cyanaudit/overview) to reverse those transactions in reverse order when needed.
 
 #### Setup
 
@@ -24,11 +24,28 @@ In order to instantiate a `MassiveActionHandler`, four arguments are needed:
 
 - `handlerVersions`: This is an array of `HandlerVersion`s. For more information, [see the `demux-js` documentation](https://eosio.github.io/demux-js/classes/abstractactionhandler.html#applyupdaters). 
 
-- `massiveInstance`: A connected massive database connection object. demux-js-postgress requires that you have a Postgres server running version 9.6 or greater. For more information on how to configure and instantiate this object, see the [massivejs documentation](https://github.com/dmfay/massive-js#connecting-to-a-database).
+- `massiveInstance`: A connected massive database connection object. demux-js-postgress requires that you have a Postgres server running version 9.6 or greater. **It is highly recommended that you use the `massive` object exported from this library. See below for more information.** For more information on how to configure and instantiate this object, see the [massivejs documentation](https://github.com/dmfay/massive-js#connecting-to-a-database).
 
 - `dbSchema`: The name of the schema we will operate in.
 
 - `migrationSequences`: *(See next section below)*
+
+#### Note About Using Massive.js
+
+[Massive.js](https://gitlab.com/dmfay/massive-js) depends on [`pg-promise`](https://github.com/vitaly-t/pg-promise), and this package is very sensitive to any version changes of this dependency (even patch releases!). To help make it easier to align versions, it is recommended that you **do not** depend on Massive.js directly, and instead use the `massive` object exported from this package:
+
+```typescript
+import { massive } from 'demux-postgres'
+
+// or
+
+const { massive } = require('demux-postgtres')
+```
+
+You can then use this object as if you had imported from Massive.js itself.
+
+If you are getting a `TypeError: Invalid query format.` error, you have misaligned `pg-promise` versions!
+
 
 #### Migrations
 
