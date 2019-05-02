@@ -119,14 +119,10 @@ export class MassiveActionHandler extends AbstractActionHandler {
   protected async handleWithState(handle: (state: any, context?: any) => void): Promise<void> {
     const indexState = await this.loadIndexState()
     const { lastIrreversibleBlockNumber, blockNumber } = indexState
-    if ( blockNumber < lastIrreversibleBlockNumber) {
+    if (blockNumber < lastIrreversibleBlockNumber) {
       await this.turnOffCyanAudit()
-      try {
-        const db = this.schemaInstance
-        await handle(db)
-      } catch (e) {
-        throw e
-      }
+      const db = this.schemaInstance
+      await handle(db)
     } else {
       await this.turnOnCyanAudit()
       await this.handleBlockWithTransactionId(handle)
