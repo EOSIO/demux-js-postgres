@@ -44,7 +44,7 @@ const { massive } = require('demux-postgres')
 
 You can then use this object as if you had imported from Massive.js itself.
 
-If you are getting a `TypeError: Invalid query format.` error, you have misaligned `pg-promise` versions!
+If you are getting a `TypeError: Invalid query format.` error, you may have misaligned `pg-promise` versions!
 
 
 #### Migrations
