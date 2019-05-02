@@ -39,7 +39,7 @@ import { massive } from 'demux-postgres'
 
 // or
 
-const { massive } = require('demux-postgtres')
+const { massive } = require('demux-postgres')
 ```
 
 You can then use this object as if you had imported from Massive.js itself.
