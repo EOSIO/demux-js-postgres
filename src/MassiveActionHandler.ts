@@ -1,5 +1,12 @@
-import { AbstractActionHandler, HandlerVersion, IndexState, NextBlock, NotInitializedError } from 'demux'
+import { Database } from 'massive'
 import { IDatabase } from 'pg-promise'
+import {
+  AbstractActionHandler,
+  HandlerVersion,
+  IndexState,
+  NextBlock,
+  NotInitializedError
+} from 'demux'
 import {
   CyanAuditError,
   MismatchedMigrationsError,
@@ -34,7 +41,7 @@ export class MassiveActionHandler extends AbstractActionHandler {
 
   constructor(
     protected handlerVersions: HandlerVersion[],
-    protected massiveInstance: any,
+    protected massiveInstance: Database,
     protected dbSchema: string = 'public',
     protected migrationSequences: MigrationSequence[] = [],
   ) {
