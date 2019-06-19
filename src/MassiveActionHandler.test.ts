@@ -66,8 +66,8 @@ describe('TestMassiveActionHandler', () => {
         effects: [],
       }],
       massiveInstance,
-      schemaName,
       [migrationSequence],
+      { dbSchema: schemaName, logLevel: 'error' }
     )
     await actionHandler.initialize()
     await massiveInstance.reload()

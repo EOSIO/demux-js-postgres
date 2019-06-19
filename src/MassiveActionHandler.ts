@@ -13,7 +13,7 @@ import {
   NonExistentMigrationError,
   NonUniqueMigrationSequenceError,
 } from './errors'
-import { MigrationSequence } from './interfaces'
+import { MassiveActionHandlerOptions, MigrationSequence } from './interfaces'
 import { Migration } from './Migration'
 import { MigrationRunner } from './MigrationRunner'
 
@@ -38,14 +38,16 @@ export class MassiveActionHandler extends AbstractActionHandler {
   protected allMigrations: Migration[] = []
   protected migrationSequenceByName: { [key: string]: MigrationSequence } = {}
   protected cyanauditEnabled: boolean = false
+  protected dbSchema: string
 
   constructor(
     protected handlerVersions: HandlerVersion[],
     protected massiveInstance: Database,
-    protected dbSchema: string = 'public',
     protected migrationSequences: MigrationSequence[] = [],
+    options: MassiveActionHandlerOptions,
   ) {
-    super(handlerVersions)
+    super(handlerVersions, options)
+    this.dbSchema = options.dbSchema ? options.dbSchema : 'public'
     for (const migrationSequence of migrationSequences) {
       if (this.migrationSequenceByName.hasOwnProperty(migrationSequence.sequenceName)) {
         throw new NonUniqueMigrationSequenceError()
