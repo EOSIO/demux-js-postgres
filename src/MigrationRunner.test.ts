@@ -2,6 +2,7 @@ import Docker from 'dockerode'
 import massive from 'massive'
 import * as path from 'path'
 import { IDatabase } from 'pg-promise'
+import * as Logger from 'bunyan'
 import { Migration } from './Migration'
 import { MigrationRunner } from './MigrationRunner'
 import * as dockerUtils from './testHelpers/docker'
@@ -13,6 +14,8 @@ const dbUser = 'docker'
 const dbPass = 'docker'
 
 const baseDir = path.join(path.resolve('./'), 'src')
+
+const log = Logger.createLogger({ name: 'TestMigrationRunner', level: 'debug' })
 
 class TestMigrationRunner extends MigrationRunner {
   public async _checkOrCreateSchema() { await this.checkOrCreateSchema() }
@@ -80,6 +83,7 @@ describe('Database setup', () => {
       massiveInstance.instance,
       [],
       'newschema',
+      log,
     )
     await runner._checkOrCreateSchema()
     await runner._checkOrCreateTables() // Schema needs something inside to be seen by Massive
@@ -91,6 +95,8 @@ describe('Database setup', () => {
     const runner = new TestMigrationRunner(
       massiveInstance.instance,
       [],
+      'public',
+      log,
     )
     await runner.setup()
     await massiveInstance.reload()
@@ -105,6 +111,7 @@ describe('Database setup', () => {
       massiveInstance.instance,
       [],
       'doesntexist',
+      log,
     )
     const schemaError = Error(
       `Schema 'doesntexist' does not exist. Make sure you have run \`setup()\` before migrating`,
@@ -160,6 +167,7 @@ describe('MigrationRunner', () => {
       massiveInstance.instance,
       migrations,
       schemaName,
+      log,
     )
     await runner.setup()
     await massiveInstance.reload()
