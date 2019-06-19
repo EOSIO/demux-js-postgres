@@ -1,4 +1,5 @@
 import * as path from 'path'
+import * as Logger from 'bunyan'
 import { IDatabase } from 'pg-promise'
 import {
   ExtraMigrationHistoryError,
@@ -15,6 +16,7 @@ export class MigrationRunner {
     protected pgp: IDatabase<{}>,
     protected migrations: Migration[],
     protected schemaName: string = 'public',
+    protected log: Logger,
     skipSetup = false,
   ) {
     const migrationNames = migrations.map((f) => f.name)
@@ -28,10 +30,12 @@ export class MigrationRunner {
   }
 
   public async setup() {
+    this.log.debug('Setting up Migration Runner...')
     await this.checkOrCreateSchema()
     await this.checkOrCreateTables()
     await this.installCyanAudit()
     this.isSetUp = true
+    this.log.debug('Set up Migration Runner')
   }
 
   public async migrate(
@@ -48,14 +52,20 @@ export class MigrationRunner {
   }
 
   protected async applyMigration(pgp: IDatabase<{}>, migration: Migration, sequenceName: string, blockNumber: number) {
+    const applyStart = Date.now()
+    this.log.debug(`Applying migration '${migration.name}'...`)
     await migration.up(pgp)
     await this.refreshCyanAudit()
     await this.registerMigration(pgp, migration.name, sequenceName, blockNumber)
+    const applyTime = Date.now() - applyStart
+    this.log.info(`Applied migration '${migration.name}' (${applyTime}ms)`)
   }
 
   // public async revertTo(migrationName) {} // Down migrations
 
   protected async checkOrCreateTables() {
+    this.log.debug(`Creating internally-needed tables if they don't already exist...`)
+    const createStart = Date.now()
     await this.pgp.none(`
       CREATE TABLE IF NOT EXISTS $1:raw._migration(
         id           serial  PRIMARY KEY,
@@ -82,15 +92,23 @@ export class MigrationRunner {
         txid         bigint  NOT NULL
       );
     `, [this.schemaName])
+    const createTime = Date.now() - createStart
+    this.log.debug(`Created internally-needed tables if they didn't already exist (${createTime}ms)`)
   }
 
   protected async checkOrCreateSchema() {
+    this.log.debug(`Creating schema '${this.schemaName}' if it doesn't already exist...`)
+    const createStart = Date.now()
     await this.pgp.none(`
       CREATE SCHEMA IF NOT EXISTS $1:raw;
     `, [this.schemaName])
+    const createTime = Date.now() - createStart
+    this.log.debug(`Created schema '${this.schemaName}' if it didn't already exist (${createTime}ms)`)
   }
 
   protected async installCyanAudit() {
+    this.log.debug('Installing CyanAudit to database...')
+    const installStart = Date.now()
     const cyanaudit = new Migration('', '', path.join(__dirname, 'cyanaudit/cyanaudit--2.2.0.sql'))
     await cyanaudit.up(this.pgp)
 
@@ -98,6 +116,8 @@ export class MigrationRunner {
     await cyanauditExt.up(this.pgp)
 
     await this.refreshCyanAudit()
+    const installTime = Date.now() - installStart
+    this.log.info(`Installed CyanAudit to database (${installTime}ms)`)
   }
 
   protected async refreshCyanAudit(pgp: IDatabase<{}> = this.pgp) {
