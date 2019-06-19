@@ -64,22 +64,32 @@ export class MassiveActionHandler extends AbstractActionHandler {
    * throw an error.
    *
    * @param sequenceName  The name of the MigrationSequence to be run.
+   * @param pgp           pg-promise instance
+   * @param initial       True if this is the first migration
    */
   public async migrate(
     sequenceName: string,
     pgp: IDatabase<{}> = this.massiveInstance.instance,
     initial: boolean = false,
   ): Promise<void> {
+    this.log.info(`Migrating database with Migration Sequence '${sequenceName}'...`)
+    const migrateStart = Date.now()
     const migrationSequence = this.migrationSequenceByName[sequenceName]
     if (!migrationSequence) {
       throw new NonExistentMigrationError(sequenceName)
     }
     let ranMigrations: Migration[] = []
     if (!initial) {
-      ranMigrations = await this.loadRanMigrations()
+      ranMigrations = await this.loadAppliedMigrations()
     }
     const extendedMigrations = ranMigrations.concat(migrationSequence.migrations)
-    const migrationRunner = new MigrationRunner(this.massiveInstance.instance, extendedMigrations, this.dbSchema, true)
+    const migrationRunner = new MigrationRunner(
+      this.massiveInstance.instance,
+      extendedMigrations,
+      this.dbSchema,
+      this.log,
+      true
+    )
     await migrationRunner.migrate(
       migrationSequence.sequenceName,
       this.lastProcessedBlockNumber + 1,
@@ -87,11 +97,15 @@ export class MassiveActionHandler extends AbstractActionHandler {
       initial,
     )
     await this.massiveInstance.reload()
+    const migrateTime = Date.now() - migrateStart
+    this.log.info(`Migrated database with Migration Sequence ${sequenceName} (${migrateTime}ms)`)
   }
 
   /**
    * Sets up the database by idempotently creating the schema, installing CyanAudit, creates internally used tables, and
    * runs any initial migration sequences provided.
+   *
+   * @param initSequenceName  The name of the MigrationSequence to be used to migrate the database initially
    */
   protected async setup(initSequenceName: string = 'init'): Promise<void> {
     if (this.initialized) {
@@ -100,15 +114,15 @@ export class MassiveActionHandler extends AbstractActionHandler {
 
     if (!this.migrationSequenceByName[initSequenceName]) {
       if (initSequenceName === 'init') {
-        this.log.warn(`No 'init' Migration sequence was provided, nor was a different initSequenceName.` +
-                     'No initial migrations have been run.')
+        this.log.warn(`No 'init' Migration sequence was provided, nor was a different initSequenceName. ` +
+                      'No initial migrations have been run.')
       } else {
         throw new NonExistentMigrationError(initSequenceName)
       }
     }
 
     try {
-      const migrationRunner = new MigrationRunner(this.massiveInstance.instance, [], this.dbSchema)
+      const migrationRunner = new MigrationRunner(this.massiveInstance.instance, [], this.dbSchema, this.log)
       await migrationRunner.setup()
       await this.massiveInstance.reload()
       await this.migrate(initSequenceName, this.massiveInstance.instance, true)
@@ -126,16 +140,12 @@ export class MassiveActionHandler extends AbstractActionHandler {
   }
 
   protected async handleWithState(handle: (state: any, context?: any) => void): Promise<void> {
-    const indexState = await this.loadIndexState()
-    const { lastIrreversibleBlockNumber, blockNumber } = indexState
-    if (blockNumber < lastIrreversibleBlockNumber) {
+    if (this.lastProcessedBlockNumber < this.lastIrreversibleBlockNumber) {
       await this.turnOffCyanAudit()
-      const db = this.schemaInstance
-      await handle(db)
     } else {
       await this.turnOnCyanAudit()
-      await this.handleBlockWithTransactionId(handle)
     }
+    await this.handleBlockWithTransactionId(handle)
   }
 
   protected async updateIndexState(
@@ -182,7 +192,9 @@ export class MassiveActionHandler extends AbstractActionHandler {
     }
   }
 
-  protected async loadRanMigrations(): Promise<Migration[]> {
+  protected async loadAppliedMigrations(): Promise<Migration[]> {
+    this.log.debug('Loading applied run migrations...')
+    const loadStart = Date.now()
     const processedMigrationRows = await this.massiveInstance._migration.find()
     const processedMigrations = processedMigrationRows.map((row: any) => {
       return {
@@ -198,8 +210,11 @@ export class MassiveActionHandler extends AbstractActionHandler {
       if (expectedName !== actualName) {
         throw new MismatchedMigrationsError(expectedName, actualName, index)
       }
+      this.log.debug(`Previously applied migration name and index matches expected: ${index} -- ${expectedName}`)
       ranMigrations.push(this.allMigrations[index])
     }
+    const loadTime = Date.now() - loadStart
+    this.log.debug(`Loaded ${ranMigrations.length} previously applied migrations (${loadTime}ms)`)
     return ranMigrations
   }
 
@@ -215,10 +230,9 @@ export class MassiveActionHandler extends AbstractActionHandler {
       },
     )
     for (const { block_number: rollbackNumber, txid } of blockNumberTxIds) {
-      this.log.info(`ROLLING BACK BLOCK ${rollbackNumber}`)
+      this.log.debug(`Rolling back block ${rollbackNumber} (undoing database transaction ${txid})...`)
       await this.massiveInstance.cyanaudit.fn_undo_transaction(txid)
     }
-    this.log.info(`Rollback complete!`)
   }
 
   private warnOverwrite(db: any, toOverwrite: string): void {
@@ -231,11 +245,14 @@ export class MassiveActionHandler extends AbstractActionHandler {
   private async turnOnCyanAudit(): Promise<void> {
     if (!this.cyanauditEnabled) {
       try {
+        this.log.debug('Turning on CyanAudit...')
+        const turnOnStart = Date.now()
         await this.massiveInstance.query('SET cyanaudit.enabled = 1;')
         this.cyanauditEnabled = true
-        this.log.info('Cyan Audit enabled!')
-      } catch (e) {
-        this.log.error('Error: ', e)
+        const turnOnTime  = Date.now() - turnOnStart
+        this.log.info(`Turned on CyanAudit (${turnOnTime}ms)`)
+      } catch (err) {
+        this.log.error(err)
         throw new CyanAuditError(true)
       }
     }
@@ -244,9 +261,13 @@ export class MassiveActionHandler extends AbstractActionHandler {
   private async turnOffCyanAudit(): Promise<void> {
     if (this.cyanauditEnabled) {
       try {
+        this.log.debug('Turning off CyanAudit...')
+        const turnOffStart = Date.now()
         await this.massiveInstance.query('SET cyanaudit.enabled = 0;')
         this.cyanauditEnabled = false
-        this.log.info('Cyan Audit disabled!')
+        this.log.info('Turned off CyanAudit')
+        const turnOffTime  = Date.now() - turnOffStart
+        this.log.info(`Turned off CyanAudit (${turnOffTime}ms)`)
       } catch (e) {
         this.log.error('Error: ', e)
         throw new CyanAuditError(false)
@@ -268,8 +289,9 @@ export class MassiveActionHandler extends AbstractActionHandler {
       db.txid = (await tx.instance.one('select txid_current()')).txid_current
       try {
         await handle(db)
-      } catch (e) {
-        throw e // Throw error to trigger ROLLBACK
+      } catch (err) {
+        this.log.debug('Error thrown in updater, triggering rollback')
+        throw err
       }
     }, {
       mode: new this.massiveInstance.pgp.txMode.TransactionMode({
