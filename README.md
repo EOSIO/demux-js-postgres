@@ -117,7 +117,7 @@ massive(dbConfig).then((db) => {
     dbConfig.schema,
     migrationSequences
   )
-  const actionWatcher = new BaseActionWatcher(actionReader, actionHander, 500)
+  const actionWatcher = new BaseActionWatcher(actionReader, actionHandler, 500)
   actionWatcher.watch()
 })
 ```
