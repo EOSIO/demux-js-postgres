@@ -110,7 +110,11 @@ const migrationSequences = require("./migrationSequences")
 const dbConfig = { ... }
 
 massive(dbConfig).then((db) => {
-  const actionReader = new NodeosActionReader("http://my-node-endpoint", 0)
+  const actionReader = new NodeosActionReader({
+    startAtBlock: 0,
+    onlyIrreversible: false,
+    nodeosEndpoint: "http://my-node-endpoint"
+  })
   const actionHandler = new MassiveActionHandler(
     handlerVersions,
     db,
