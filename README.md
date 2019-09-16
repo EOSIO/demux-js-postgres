@@ -24,7 +24,7 @@ In order to instantiate a `MassiveActionHandler`, four arguments are needed:
 
 - `handlerVersions`: This is an array of `HandlerVersion`s. For more information, [see the `demux-js` documentation](https://eosio.github.io/demux-js/classes/abstractactionhandler.html#applyupdaters). 
 
-- `massiveInstance`: A connected massive database connection object. demux-js-postgress requires that you have a Postgres server running version 9.6 or greater. **It is highly recommended that you use the `massive` object exported from this library. See below for more information.** For more information on how to configure and instantiate this object, see the [massivejs documentation](https://github.com/dmfay/massive-js#connecting-to-a-database).
+- `massiveInstance`: A connected massive database connection object. demux-js-postgress requires that you have a Postgres server running version 9.6 or greater. **It is highly recommended that you use the `massive` object exported from this library. See below for more information.** For more information on how to configure and instantiate this object, see the [massivejs documentation](https://massivejs.org/docs/connecting).
 
 - `dbSchema`: The name of the schema we will operate in.
 
@@ -106,18 +106,22 @@ const handlerVersions = require("./handlerVersions") // Import your handler vers
 // See "Migrations" section above
 const migrationSequences = require("./migrationSequences")
 
-// See https://dmfay.github.io/massive-js/connecting.html for info on massive configuration
+// See https://massivejs.org/docs/connecting for info on massive configuration
 const dbConfig = { ... }
 
 massive(dbConfig).then((db) => {
-  const actionReader = new NodeosActionReader("http://my-node-endpoint", 0)
+  const actionReader = new NodeosActionReader({
+    startAtBlock: 0,
+    onlyIrreversible: false,
+    nodeosEndpoint: "http://my-node-endpoint"
+  })
   const actionHandler = new MassiveActionHandler(
     handlerVersions,
     db,
     dbConfig.schema,
     migrationSequences
   )
-  const actionWatcher = new BaseActionWatcher(actionReader, actionHander, 500)
+  const actionWatcher = new BaseActionWatcher(actionReader, actionHandler, 500)
   actionWatcher.watch()
 })
 ```
