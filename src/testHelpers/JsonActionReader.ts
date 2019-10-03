@@ -12,6 +12,10 @@ export class JsonActionReader extends AbstractActionReader {
     super({startAtBlock, onlyIrreversible})
   }
 
+  public get _currentBlockNumber(): number {
+    return this.currentBlockNumber
+  }
+
   public async getHeadBlockNumber(): Promise<number> {
     const block = this.blockchain.slice(-1)[0]
     const { blockInfo: { blockNumber } } = block

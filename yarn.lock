@@ -1239,10 +1239,10 @@ delegates@^1.0.0:
   resolved "https://registry.yarnpkg.com/delegates/-/delegates-1.0.0.tgz#84c6e159b81904fdca59a0ef44cd870d31250f9a"
   integrity sha1-hMbhWbgZBP3KWaDvRM2HDTElD5o=
 
-demux@5.0.2-533:
-  version "5.0.2-533"
-  resolved "https://registry.yarnpkg.com/demux/-/demux-5.0.2-533.tgz#181c997eef688b30b17e09e45d6114d4863a8e2e"
-  integrity sha512-FnPE7rlVmYePOrAAtrBR2NUZ0bPu75SrPBgKdeckBnvA6XmMelVYuH+LArv15Bo5Df7DZb9YVePwH3gjriGcyQ==
+demux@5.0.2-572:
+  version "5.0.2-572"
+  resolved "https://registry.yarnpkg.com/demux/-/demux-5.0.2-572.tgz#03248cbb255da67b6d60c6ce0560584ce1efda0a"
+  integrity sha512-5TN92DasjUWacED+OqaT9fDUvHPQ0jVu4OeWawUq1DRcLOJpCVtU+9UeTcNtMAkHqCmqA6Pd+PyuULzCoinJZQ==
   dependencies:
     bunyan "1.8.12"
     express "4.16.4"
