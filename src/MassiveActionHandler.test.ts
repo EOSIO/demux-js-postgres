@@ -82,6 +82,7 @@ describe('TestMassiveActionHandler', () => {
   })
 
   afterAll(async (done) => {
+    await massiveInstance.pgp.end()
     await dockerUtils.removePostgresContainer(docker, postgresContainerName)
     done()
   })

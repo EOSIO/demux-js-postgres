@@ -73,6 +73,7 @@ describe('Database setup', () => {
   })
 
   afterAll(async (done) => {
+    await massiveInstance.pgp.end()
     await dockerUtils.removePostgresContainer(docker, containerName)
     done()
   })
