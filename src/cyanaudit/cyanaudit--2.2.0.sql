@@ -1147,7 +1147,7 @@ begin
 
     my_constraint_name := 'partition_range_chk';
 
-     select cn.consrc
+     select pg_get_constraintdef(cn.oid) as consrc
        into my_constraint_src
        from pg_constraint cn
        join pg_class c
