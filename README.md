@@ -96,7 +96,7 @@ This is also important for maintaining determinism of data (e.g. during replays)
 ```javascript
 const { BaseActionWatcher } = require("demux")
 const { MassiveActionHandler } = require("demux-postgres")
-const { NodeosActionReader } = require("demux-eos") // Or any other compatible Action Reader
+const { NodeosActionReader } = require("demux-eos/v1.8") // Or any other compatible Action Reader
 
 const massive = require("massive")
 
@@ -118,10 +118,10 @@ massive(dbConfig).then((db) => {
   const actionHandler = new MassiveActionHandler(
     handlerVersions,
     db,
-    dbConfig.schema,
-    migrationSequences
+    migrationSequences,
+    { dbSchema: dbConfig.schema }
   )
-  const actionWatcher = new BaseActionWatcher(actionReader, actionHandler, 500)
+  const actionWatcher = new BaseActionWatcher(actionReader, actionHandler, { pollInterval: 500 })
   actionWatcher.watch()
 })
 ```
